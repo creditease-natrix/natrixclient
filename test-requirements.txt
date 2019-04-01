@@ -1,0 +1,7 @@
+setuptools>=40.6.2
+# used to upgrade package to pypi.python.org
+# python setup.py sdist bdist_wheel
+# twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+# pip install --index-url https://test.pypi.org/simple/ natrixclient
+# pip install --upgrade --index-url https://test.pypi.org/simple/ natrixclient
+twine>=1.12.1

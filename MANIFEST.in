@@ -1,0 +1,8 @@
+# 默认不会安装 requirements 相关文件
+include LICENSE
+include requirements.txt
+include test-requirements.txt
+include natrix.ini
+include natrixclient/conf/etc/natrix/*.*
+include natrixclient/conf/etc/systemd/system/*.*
+include natrixclient/data/*.db

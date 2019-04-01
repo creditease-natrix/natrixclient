@@ -1,0 +1,37 @@
+*.DS_Store
+*.egg*
+*.log
+*.mo
+*.pyc
+*.swo
+*.swp
+*~
+.coverage
+.idea
+.stestr/
+.testrepository
+.tox
+AUTHORS
+build
+ChangeLog
+dist
+# Doc related
+doc/build
+docs/_build
+doc/source/contributor/api/
+# Development environment files
+.project
+.pydevproject
+cover
+# Files created by releasenotes build
+releasenotes/build
+
+MANIFEST
+coverage.xml
+nosetests.xml
+pylint.txt
+toy.py
+.cache/
+cover/
+build/
+__pycache__/

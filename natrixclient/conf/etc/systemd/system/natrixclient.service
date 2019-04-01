@@ -1,0 +1,15 @@
+[Unit]
+Description=Natrix Client Service Deamon
+After=rc-local.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/etc/natrix/
+ExecStart=/usr/bin/python3 natrixclient.daemon start
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Alias=natrixclient

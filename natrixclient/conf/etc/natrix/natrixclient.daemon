@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
+import logging
+import sys
+from natrixclient.common import const
+from natrixclient.rabbitmq import start
+from natrixclient.rabbitmq import stop
+
+
+logger_name = "natrixclient_daemon"
+logger = logging.getLogger(logger_name)
+logger.setLevel(logging.DEBUG)
+
+# create file handler which logs even debug messages
+fh = logging.FileHandler(const.LOGGING_PATH + logger_name + '.log')
+fh.setLevel(logging.DEBUG)
+fh_fmt = logging.Formatter(fmt=const.FILE_LOGGING_FORMAT, datefmt=const.FILE_LOGGING_DATE_FORMAT)
+fh.setFormatter(fh_fmt)
+
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+# create formatter and add it to the handlers
+ch_fmt = logging.Formatter(fmt=const.CONSOLE_LOGGING_FORMAT)
+ch.setFormatter(ch_fmt)
+
+# add the handlers to logger
+logger.addHandler(ch)
+logger.addHandler(fh)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("should choose action: start/stop")
+        exit(1)
+    if sys.argv[1].lower() == "start":
+        logger.debug("natrixclient daemon starting ......")
+        start()
+        logger.debug("natrixclient daemon started")
+    elif sys.argv[1].lower() == "stop":
+        logger.debug("natrixclient daemon stopping ...")
+        stop()
+        logger.debug("natrixclient daemon stopped")
+    else:
+        print("Do not support action {}, please support start/stop".format(sys.argv[1]))
+        exit(2)
