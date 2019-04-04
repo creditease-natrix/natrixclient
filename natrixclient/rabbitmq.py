@@ -6,6 +6,7 @@ import json
 import pika
 import sys
 import time
+from logging.handlers import RotatingFileHandler
 from natrixclient.common import const
 from natrixclient.common.const import RABBITMQ_LEVEL
 from natrixclient.common.const import RABBITMQ_FILE_LEVEL
@@ -22,13 +23,13 @@ from natrixclient.command.ndns import execute as dns_execute
 from natrixclient.command.nhttp import execute as http_execute
 
 
-logger_name = "natrixclient_rabbitmq"
-logger = logging.getLogger(logger_name)
+ln = "natrixclient_rabbitmq"
+logger = logging.getLogger(ln)
 logger.setLevel(RABBITMQ_LEVEL)
 
 # create file handler which logs even debug messages
-fn = const.LOGGING_PATH + logger_name + '.log'
-fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
+fn = const.LOGGING_PATH + ln + '.log'
+fh = RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
 fh.setLevel(RABBITMQ_FILE_LEVEL)
 fh_fmt = logging.Formatter(fmt=const.FILE_LOGGING_FORMAT, datefmt=const.FILE_LOGGING_DATE_FORMAT)
 fh.setFormatter(fh_fmt)
@@ -61,7 +62,7 @@ def queue_callback(_ch, _method, _properties, body):
     # terminal_request_receive_time
     request_parameters["terminal_request_receive_time"] = time.time()
     # set logger to request
-    request_parameters["logger"] = logger_name
+    request_parameters["logger"] = ln
     # response_parameters
     response_parameters = dict()
     response_parameters["storage_type"] = const.StorageMode.RABBITMQ
@@ -70,7 +71,7 @@ def queue_callback(_ch, _method, _properties, body):
     response_parameters["command_uuid"] = command["uuid"]
     response_parameters["command_terminal"] = command["terminal"]
     # set logger to response
-    response_parameters["logger"] = logger_name
+    response_parameters["logger"] = ln
 
     # 分发, 根据command_protocol
     if protocol.lower() == Command.PING.value:

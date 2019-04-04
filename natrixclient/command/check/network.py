@@ -142,20 +142,6 @@ class NetInfo(object):
         return access
 
     @staticmethod
-    def get_default_macaddress(interfaces):
-        # 如果有缺省的使用缺省的
-        for key, interface_json in interfaces.items():
-            if interface_json.get("is_default") and interface_json.get("macaddress"):
-                return interface_json.get("macaddress")
-        # 如果没有缺省的, 使用第一个非空的
-        for interface in interfaces:
-            interface_json = json.loads(interface)
-            if interface_json.get("macaddress"):
-                return interface_json.get("macaddress")
-        # 2个都不满足, 返回空
-        return None
-
-    @staticmethod
     def set_gateways(interfaces_json):
         netgateways = netifaces.gateways()
         gateways = netgateways.get(netifaces.AF_INET)
@@ -168,8 +154,8 @@ class NetInfo(object):
 
     # 获取主机名,如果主机名不符合规范,重设主机名
     @staticmethod
-    def set_hostname(interfaces_json):
-        macaddress = NetInfo.get_default_macaddress(interfaces_json).replace(":", "")
+    def set_hostname():
+        macaddress = NetInfo.get_default_mac().replace(":", "")
         default_hostname = "pi-" + macaddress
         init_hostname = socket.gethostname()
         logger.debug("get hostname = %s" % init_hostname)
@@ -206,7 +192,127 @@ class NetInfo(object):
     # CELLULAR_3G = "3G"
     # CELLULAR_4G = "4G"
     # UNKNOWN = "unknown"
-    def get_interface(self, interface):
+    @staticmethod
+    def get_interface(interface):
+        interface_json = {
+            "type": "wired",
+            "name": interface
+        }
+        wireless_keys = ["wlan"]
+        for wireless_key in wireless_keys:
+            if interface.find(wireless_key) >= 0:
+                interface_json["type"] = "wireless"
+                break
+        info = netifaces.ifaddresses(interface)
+        # 地址信息
+        interface_json["macaddress"] = None
+        info_mac = info.get(netifaces.AF_LINK)
+        if info_mac:
+            if len(info_mac) == 1:
+                interface_json["macaddress"] = info_mac[0].get("addr").replace(":", "").lower()
+            else:
+                logger.error("get mac address for interface {} wrong: {}".format(interface, str(info_mac)))
+        else:
+            logger.error("cannot get mac address for interface {}".format(interface))
+
+        # ip地址信息, need to consider with gateway
+        info_ipv4 = info.get(netifaces.AF_INET)
+        if info_ipv4 and len(info_ipv4) == 1:
+            local_ip = info_ipv4[0].get("addr")
+            interface_json["local_ip"] = local_ip
+            interface_json["local_location"] = IpLocation.get_location(local_ip)
+            interface_json["netmask"] = info_ipv4[0].get("netmask")
+            interface_json["broadcast"] = info_ipv4[0].get("broadcast")
+            interface_json["is_default"] = False
+        elif info_ipv4 and len(info_ipv4) > 1:
+            """
+            存在1个接口对应n个IP, 例如
+            $ ip addr
+            1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+                link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+                inet 127.0.0.1/8 scope host lo
+                   valid_lft forever preferred_lft forever
+                inet6 ::1/128 scope host 
+                   valid_lft forever preferred_lft forever
+            2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+                link/ether b8:27:eb:f9:41:74 brd ff:ff:ff:ff:ff:ff
+                inet 10.10.36.222/24 brd 10.10.36.255 scope global eth0
+                   valid_lft forever preferred_lft forever
+                inet 10.10.36.55/24 brd 10.10.36.255 scope global secondary eth0
+                   valid_lft forever preferred_lft forever
+                inet6 fe80::ba27:ebff:fef9:4174/64 scope link 
+                   valid_lft forever preferred_lft forever
+            """
+            msg = "interface: {} have {} ip, natrix do not support, please check your network!".format(
+                    interface, len(info))
+            logger.warning(msg)
+
+            local_ip = None
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                # doesn't even have to be reachable
+                s.connect(('10.255.255.255', 1))
+                local_ip = s.getsockname()[0]
+            except Exception:
+                msg = "Cannot get an default ip for interface {}".format(interface)
+                logger.exception(msg)
+
+            if local_ip:
+                for info in info_ipv4:
+                    if info.get("addr") == local_ip:
+                        interface_json["local_ip"] = info.get("addr")
+                        interface_json["local_location"] = IpLocation.get_location(local_ip)
+                        interface_json["netmask"] = info.get("netmask")
+                        interface_json["broadcast"] = info.get("broadcast")
+                        interface_json["is_default"] = False
+
+            if not interface_json.get("local_ip"):
+                interface_json["local_ip"] = None
+                interface_json["local_location"] = None
+                interface_json["netmask"] = None
+                interface_json["broadcast"] = None
+                interface_json["is_default"] = False
+        else:
+            msg = "interface {} do not have IPV4 address".format(interface)
+            logger.warning(msg)
+            interface_json["local_ip"] = None
+            interface_json["local_location"] = None
+            interface_json["netmask"] = None
+            interface_json["broadcast"] = None
+            interface_json["is_default"] = False
+
+        # in all situation, set gateway to None
+        interface_json["gateway"] = None
+
+        # 公网IP
+        if interface_json["local_ip"]:
+            public_ip = IpPublic.get_publicip(interface)
+            interface_json["public_ip"] = public_ip
+        else:
+            interface_json["public_ip"] = None
+
+        if interface_json.get("public_ip"):
+            interface_json["public_location"] = IpLocation.get_location(interface_json.get("public_ip"))
+        else:
+            interface_json["public_location"] = None
+        return interface_json
+
+    # 得到所有的接口信息
+    @staticmethod
+    def get_interfaces():
+        interfaces_json = {}
+        for interface in netifaces.interfaces():
+            if interface != "lo":
+                interface_json = NetInfo.get_interface(interface)
+                interfaces_json[interface] = interface_json
+        # 设置 gateway 和 is_default 信息
+        NetInfo.set_gateways(interfaces_json)
+        # 设置名称
+        # NetInfo.set_hostname(interfaces_json)
+        # 解析网关信息
+        return interfaces_json
+
+    def get_access_interface(self, interface):
         interface_json = {
             "type": "wired",
             "name": interface
@@ -311,9 +417,7 @@ class NetInfo(object):
             interface_json["public_location"] = ipl.get_location(interface_json.get("public_ip"))
         else:
             interface_json["public_location"] = None
-        return interface_json
 
-    def get_interface_access(self, interface, interface_json):
         # 连接信息
         if interface_json["local_ip"]:
             interface_json["access_intranet"] = self.access_intranet(interface)
@@ -325,20 +429,12 @@ class NetInfo(object):
             interface_json["access_internet"] = False
         return interface_json
 
-    def get_basic_interfaces(self):
-        interfaces_json = {}
-        for interface in netifaces.interfaces():
-            if interface != "lo":
-                interface_json = self.get_interface(interface)
-                interfaces_json[interface] = interface_json
-
     # 得到所有的接口信息
-    def get_interfaces(self):
+    def get_access_interfaces(self):
         interfaces_json = {}
         for interface in netifaces.interfaces():
             if interface != "lo":
-                interface_json = self.get_interface(interface)
-                interface_access_json = self.get_interface_access(interface, interface_json)
+                interface_access_json = self.get_access_interface(interface)
                 interfaces_json[interface] = interface_access_json
         # 设置 gateway 和 is_default 信息
         NetInfo.set_gateways(interfaces_json)
@@ -374,6 +470,21 @@ class NetInfo(object):
             ips.append(ip_dict)
         return ips
 
+    @staticmethod
+    def get_default_mac():
+        interface_json = NetInfo.get_interfaces()
+        # 如果有缺省的使用缺省的
+        for key, interface_json in interface_json.items():
+            if interface_json.get("is_default") and interface_json.get("macaddress"):
+                return interface_json.get("macaddress")
+        # 如果没有缺省的, 使用第一个非空的
+        for interface in interface_json:
+            interface_json = json.loads(interface)
+            if interface_json.get("macaddress"):
+                return interface_json.get("macaddress")
+        # 2个都不满足, 返回空
+        return None
+
     # 得到接口的mac地址信息
     @staticmethod
     def get_mac(interface):
@@ -402,8 +513,9 @@ class NetInfo(object):
                 macs.append(mac)
         return macs
 
-    def get_basic(self):
-        return self.get_basic_interfaces()
+    @staticmethod
+    def get_basic():
+        return NetInfo.get_interfaces()
 
     def get_advance(self):
-        return self.get_interfaces()
+        return self.get_access_interfaces()

@@ -21,15 +21,14 @@ natrixclient是配合Natrix的功能，安装在终端上的客户端软件，�
 
 
 
-| 操作系统 \| 硬件 | 树梅派2 | 树梅派3B | X86-64 |
-| ---------------- | ------- | -------- | ------ |
-| raspbian wheezy  | Y       | Y        |        |
-| raspbian jessie  | Y       | Y        |        |
-| raspbian strech  | Y       | Y        |        |
-| ubuntu 18        |         |          | Y      |
-| centos 7         |         |          |        |
-| windows 7        |         |          |        |
-| windows 10       |         |          |        |
+| 操作系统 \| 硬件 | 树梅派3B | X86-64 |
+| ---------------- | -------- | ------ |
+| raspbian jessie  | Y        |        |
+| raspbian strech  | Y        |        |
+| ubuntu 18        |          | Y      |
+| centos 7         | Y        |        |
+| windows 7        |          |        |
+| windows 10       |          |        |
 
 ## 安装
 
@@ -1804,12 +1803,12 @@ natrix check type
 
 type有如下几种
 
-| type     | comments                        |
-| -------- | ------------------------------- |
-| basic    | 基础上报功能                          |
-| advance  | 所有的信息都上报                        |
-| hardware | 硬件信息                            |
-| network  | 网络信息                            |
+| 类型     | 备注                                           |
+| -------- | ---------------------------------------------- |
+| basic    | 基础上报功能                                   |
+| advance  | 所有的信息都上报                               |
+| hardware | 硬件信息                                       |
+| network  | 网络信息                                       |
 | system   | 系统信息, 包含操作系统信息, natrixclient的信息 |
 
 ## API
@@ -1860,34 +1859,36 @@ heatbeat属于心跳时间, 是从客户端发出的时间
 
 ##### 操作系统信息 operating_json
 
-| name                      | type   | comments                                 | 里程碑  |
-| ------------------------- | ------ | ---------------------------------------- | ---- |
-| type                      | string | 操作系统类型, 例如Linux或Windows                  |      |
-| series                    | string | 操作系统系列, 例如debian或redhat                  |      |
-| name                      | string | 操作系统名称，例如ubuntu或centos或raspbian          |      |
-| codename                  | string | 操作系统发行代号, 例如strech或'Bionic Beaver'       |      |
-| major_version             | string | 操作系统主版本号                                 |      |
-| minor_version             | string | 操作系统次版本号                                 |      |
-| kernel_version            | string | 操作系统内核版本信息, 例如linux kernel的版本信息          |      |
-| architecture              | string | 操作系统架构信息, 32bit 或 64bit                  |      |
-| platform                  | string | 综合平台信息，例如 'Linux-4.15.0-42-generic-x86_64-with-Ubuntu-18.04-bionic' |      |
-| python_version            | string | 默认python版本                               |      |
-| python2_version           | string | python2的版本                               | 2    |
-| python3_version           | string | python3的版本                               | 2    |
-| desktop_version           | string | 桌面版本信息, 0代表不是桌面版                         |      |
-| selenium_version          | string | selenium版本信息, 0代表未安装                     |      |
-| chrome_version            | string | chrome版本信息, 0代表未安装                       |      |
-| chrome_webdriver_path     | string | chrome webdriver路径信息, 空代表未找到             |      |
-| chrome_webdriver_version  | string | chrome webdriver版本信息, 0代表未安装             |      |
-| firefox_version           | string | firefox版本信息, 0代表未安装                      |      |
-| firefox_webdriver_path    | string | firefox webdriver路径信息, 空代表未找到            |      |
-| firefox_webdriver_version | string | firefox webdriver版本信息, 0代表未安装            |      |
+
+
+| 名称                      | 类型   | 备注                                                         | 必须 | 空值 | 里程碑 |
+| ------------------------- | ------ | ------------------------------------------------------------ | ---- | ---- | ------ |
+| type                      | string | 操作系统类型, 例如Linux或Windows                             | Y    | N    |        |
+| series                    | string | 操作系统系列, 例如debian或redhat                             | Y    | N    |        |
+| name                      | string | 操作系统名称，例如ubuntu或centos或raspbian                   | Y    | N    |        |
+| codename                  | string | 操作系统发行代号, 例如strech或'Bionic Beaver'                | Y    | N    |        |
+| major_version             | string | 操作系统主版本号                                             | Y    | N    |        |
+| minor_version             | string | 操作系统次版本号, 可以为空或空值                             | Y    | N    |        |
+| kernel_version            | string | 操作系统内核版本信息, 例如linux kernel的版本信息             | Y    | N    |        |
+| architecture              | string | 操作系统架构信息, 32bit 或 64bit                             | Y    | N    |        |
+| platform                  | string | 综合平台信息，例如 'Linux-4.15.0-42-generic-x86_64-with-Ubuntu-18.04-bionic' | Y    | N    |        |
+| python_version            | string | 默认python版本                                               | Y    | N    |        |
+| python2_version           | string | python2的版本                                                |      |      | 2      |
+| python3_version           | string | python3的版本                                                |      |      | 2      |
+| desktop_version           | string | 桌面版本信息                                                 | Y    | N    |        |
+| selenium_version          | string | selenium版本信息, 0代表未安装                                | Y    | N    |        |
+| chrome_version            | string | chrome版本信息, 0代表未安装                                  | Y    | N    |        |
+| chrome_webdriver_path     | string | chrome webdriver路径信息, 空代表未找到                       | Y    | Y    |        |
+| chrome_webdriver_version  | string | chrome webdriver版本信息, 0代表未安装                        | Y    | N    |        |
+| firefox_version           | string | firefox版本信息, 0代表未安装                                 | Y    | N    |        |
+| firefox_webdriver_path    | string | firefox webdriver路径信息, 空代表未找到                      | Y    | Y    |        |
+| firefox_webdriver_version | string | firefox webdriver版本信息, 0代表未安装                       | Y    | N    |        |
 
 ##### natrixclient软件信息 natrixclient_json
 
-| 名称                 | 类型   | 说明                   | 备注 |
-| -------------------- | ------ | ---------------------- | ---- |
-| natrixclient_version | string | natrixclient的版本信息 |      |
+| 名称                 | 类型   | 说明                   | 必须 | 空值 | 里程碑 |
+| -------------------- | ------ | ---------------------- | ---- | ---- | ------ |
+| natrixclient_version | string | natrixclient的版本信息 | Y    | N    |        |
 
 #### 硬件信息 hardware_json
 
@@ -1904,6 +1905,18 @@ heatbeat属于心跳时间, 是从客户端发出的时间
 	"disk_info": disk_json,
 },
 ```
+
+| 名称        | 类型   | 说明     | 必须 | 空值 | 里程碑 |
+| ----------- | ------ | -------- | ---- | ---- | ------ |
+| sn          | sting  | 序列号   | Y    | N    |        |
+| hostname    | string | 主机名   | Y    | N    |        |
+| product     | string | 产品型号 | Y    | N    |        |
+| boot_time   | float  | 开机时长 | Y    | N    |        |
+| cpu_info    | json   | cpu信息  | Y    | N    |        |
+| memory_info | json   | 内存信息 | Y    | N    |        |
+| disk_info   | json   | 磁盘信息 | Y    | N    |        |
+
+
 
 ##### sn
 
@@ -1929,7 +1942,7 @@ sudo dmidecode -t system | grep uuid
 
 ##### hostname
 
-
+主机名
 
 ##### product
 
@@ -1953,31 +1966,26 @@ cat /sys/firmware/devicetree/base/model
 
 ##### cpu_json
 
-| 名称          | 类型     | 说明                      | 里程碑  |
-| ----------- | ------ | ----------------------- | ---- |
-| cpu_model   | string | CPU型号                   |      |
-| cpu_core    | int    | CPU核数                   |      |
-| cpu_percent | float  | CPU使用率, 默认是一秒钟的使用率, 百分比 |      |
+| 名称        | 类型   | 说明                                    | 必须 | 空值 | 里程碑 |
+| ----------- | ------ | --------------------------------------- | ---- | ---- | ------ |
+| cpu_model   | string | CPU型号                                 | Y    | N    |        |
+| cpu_core    | int    | CPU核数                                 | Y    | N    |        |
+| cpu_percent | float  | CPU使用率, 默认是一秒钟的使用率, 百分比 | Y    | N    |        |
 
 ##### memory _info
 
-| 名称               | 类型     | 说明         | 里程碑  |
-| ---------------- | ------ | ---------- | ---- |
-| memory_total     | float  | 总的内存       |      |
-| memory_used      | float  | 已经使用的内存    |      |
-| memory_percent   | float  | 内存使用率, 百分比 |      |
-| memory_frequency | string | 内存频率       | 3    |
-|                  |        |            |      |
+| 名称           | 类型  | 说明               | 必须 | 空值 | 里程碑 |
+| -------------- | ----- | ------------------ | ---- | ---- | ------ |
+| memory_total   | float | 总的内存           | Y    | N    |        |
+| memory_used    | float | 已经使用的内存     | Y    | N    |        |
+| memory_percent | float | 内存使用率, 百分比 | Y    | N    |        |
+|                |       |                    |      |      |        |
 
 ##### disk_info
 
-| 名称           | 类型    | 说明      | 里程碑  |
-| ------------ | ----- | ------- | ---- |
-| disk_percent | float | 磁盘使用率   |      |
-|              |       | TF卡品牌   | 3    |
-|              |       | TF卡大小   | 3    |
-|              |       | TF卡读写速度 | 3    |
-|              |       | TF卡健康度  | 3    |
+| 名称         | 类型  | 说明       | 必须 | 空值 | 里程碑 |
+| ------------ | ----- | ---------- | ---- | ---- | ------ |
+| disk_percent | float | 磁盘使用率 | Y    | N    |        |
 
 #### 网络信息 network_json
 
@@ -2012,52 +2020,40 @@ cat /sys/firmware/devicetree/base/model
 }
 ```
 
-| 名称              | 类型      | 说明                      | 里程碑  |
-| --------------- | ------- | ----------------------- | ---- |
-| type            | string  | 网卡类型(有线,无线,4G)          | 2    |
-| name            | string  | 网卡名称, 例如eth0等           |      |
-| macaddress      | string  | MACADDRESS, 网卡物理地址      |      |
-| local_ip        | string  | 本地IP地址                  |      |
-| local_location  | json    |                         |      |
-| netmask         | string  | 子网掩码                    |      |
-| broadcast       | string  | 广播地址                    |      |
-| gateway         | string  | 网关                      |      |
-| is_default      | boolean | 是否是缺省使用的网卡, 默认是false    |      |
-|                 |         |                         |      |
-| public_ip       | string  | 检测公网IP                  |      |
-| public_location | json    |                         |      |
-| location_info   | json    | 检测地域, 格式为 location_json |      |
-|                 |         |                         |      |
-| access_intranet | boolean | 是否能访问局域网, 默认false       |      |
-| access_coporate | boolean | 是否能访问企业网, 默认true        |      |
-| access_internet | boolean | 是否能访问互联网, 默认为false      |      |
-|                 |         |                         |      |
+| 名称            | 类型    | 说明                              | 必须 | 空值 | 里程碑 |
+| --------------- | ------- | --------------------------------- | ---- | ---- | ------ |
+| type            | string  | 网卡类型(有线,无线,4G)            | Y    | N    |        |
+| name            | string  | 网卡名称, 例如eth0等              | Y    | N    |        |
+| macaddress      | string  | MACADDRESS, 网卡物理地址          | Y    | Y    |        |
+| local_ip        | string  | 本地IP地址                        | Y    | Y    |        |
+| local_location  | json    | location_json                     | Y    | Y    |        |
+| netmask         | string  | 子网掩码                          | Y    | Y    |        |
+| broadcast       | string  | 广播地址                          | Y    | Y    |        |
+| gateway         | string  | 网关                              | Y    | Y    |        |
+| is_default      | boolean | 是否是缺省使用的网卡, 默认是false | Y    | Y    |        |
+|                 |         |                                   |      |      |        |
+| public_ip       | string  | 检测公网IP                        | Y    | Y    |        |
+| public_location | json    | location_json                     | Y    | Y    |        |
+|                 |         |                                   |      |      |        |
+| access_intranet | boolean | 是否能访问局域网, 默认False       | Y    | N    |        |
+| access_coporate | boolean | 是否能访问企业网, 默认False       | Y    | N    |        |
+| access_internet | boolean | 是否能访问互联网, 默认为False     | Y    | N    |        |
+|                 |         |                                   |      |      |        |
 
 对于一个接口来说，有可能存在好几个IP地址的情况, 这种情况下，need to throw exception, natrix do not support this situation
 
 ##### 地域与运营商信息 location_json
 
-| 名称         | 类型     | 说明   | 里程碑  |
-| ---------- | ------ | ---- | ---- |
-| country    | string | 国家   |      |
-| region     | string | 区域   |      |
-| province   | string |      |      |
-| city       | string | 城市   |      |
-| longtitude | string | 经度   |      |
-| latitude   | string | 纬度   |      |
-| isp        | string | 运营商  |      |
-|            |        |      |      |
+| 名称     | 类型   | 说明              | 必须 | 空值 | 里程碑 |
+| -------- | ------ | ----------------- | ---- | ---- | ------ |
+| country  | string | 国家              | Y    | N    |        |
+| region   | string | 区域, 0代表没有   | Y    | N    |        |
+| province | string | 省, 0代表没有     | Y    | N    |        |
+| city     | string | 城市, 0代表没有   | Y    | N    |        |
+| isp      | string | 运营商, 0代表没有 | Y    | N    |        |
+|          |        |                   |      |      |        |
 
-#### DNS信息 dns_info
 
-- **缺省DNS信息**
-- **本地DNS信息**
-
-使用
-
-systemd-resolvedn --status
-
-resolvectl status
 
 ### 基础返回信息 basic_infomation
 

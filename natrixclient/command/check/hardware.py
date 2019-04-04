@@ -10,8 +10,8 @@ import logging
 import psutil
 import socket
 import subprocess
-from cpuinfo.cpuinfo import get_cpu_info
 from natrixclient.command.check.system import SystemInfo
+from natrixclient.command.check.network import NetInfo
 
 
 logger = logging.getLogger(__name__)
@@ -25,9 +25,10 @@ class HardwareInfo(object):
             logger = logging.getLogger(parameters.get("logger"))
 
     # 对于unix-like系统(非raspbian), 使用
+    # 如果得不到sn, 使用缺省网卡的mac地址
     @staticmethod
     def get_sn():
-        sn = ""
+        sn = None
         system_type = SystemInfo.get_type().strip().lower()
         system_name = SystemInfo.get_name().strip().lower()
         if system_type == "linux":
@@ -40,8 +41,7 @@ class HardwareInfo(object):
                 if status == 0:
                     sn = output
                 else:
-                    # TODO, throw exception
-                    print("cannot get serial number from /proc/cpuinfo")
+                    logger.error("cannot get serial number from /proc/cpuinfo for raspbian")
             else:
                 command1 = "sudo dmidecode -t system | grep -i serial | cut -d ':' -f 2"
                 status1, output1 = subprocess.getstatusoutput(command1)
@@ -53,11 +53,13 @@ class HardwareInfo(object):
                     if status2 == 0:
                         sn = output2.split(":")[1].strip()
                     else:
-                        # TODO, throw exception
-                        print("cannot get uuid using dmidecode")
+                        logger.error("cannot get uuid using dmidecode")
         else:
-            # TODO
-            print("just support linux system")
+            logger.error("just support linux system")
+
+        # 如果得不到sn, 使用缺省网卡的mac地址
+        if not sn:
+            sn = NetInfo.get_default_mac()
         return sn
 
     # 获取主机名,如果主机名不符合规范,重设主机名
@@ -73,7 +75,7 @@ class HardwareInfo(object):
     # 对于其他的linux系统, 使用 dmidecode -t system | grep uuid
     @staticmethod
     def get_product():
-        product = "get hardware product error, just support linux-like system"
+        product = "UNKNOWN"
         if SystemInfo.get_type().strip().lower() == "linux":
             if SystemInfo.get_name().strip().lower() == "raspbian":
                 try:
@@ -101,17 +103,23 @@ class HardwareInfo(object):
     def get_cpu_info(interval=1):
         cpu_info = {}
         # CPU型号
-        system_type = SystemInfo.get_type().strip().lower()
-        if system_type == "darwin":
-            # for mac os
-            mac_cpu_info = get_cpu_info()
-            cpu_info["cpu_model"] = mac_cpu_info.get("brand")
-        else:
-            with open('/proc/cpuinfo') as fd:
-                for line in fd:
-                    if line.startswith('model name'):
-                        cpu_model = line.split(':')[1].strip()
-                        break
+        # system_type = SystemInfo.get_type().strip().lower()
+        # if system_type == "darwin":
+        #     # for mac os
+        #     mac_cpu_info = get_cpu_info()
+        #     cpu_info["cpu_model"] = mac_cpu_info.get("brand")
+        # else:
+        #     with open('/proc/cpuinfo') as fd:
+        #         for line in fd:
+        #             if line.startswith('model name'):
+        #                 cpu_model = line.split(':')[1].strip()
+        #                 break
+        cpu_model = "UNKNOWN"
+        with open('/proc/cpuinfo') as fd:
+            for line in fd:
+                if line.startswith('model name'):
+                    cpu_model = line.split(':')[1].strip()
+                    break
         cpu_info["cpu_model"] = cpu_model
         # cpu 核心数
         cpu_info["cpu_core"] = psutil.cpu_count()
@@ -131,13 +139,13 @@ class HardwareInfo(object):
         memory_info["memory_used"] = memory.used
         memory_percent = "%.2f" % (memory.used / memory.total * 100)
         memory_info["memory_percent"] = float(memory_percent)
-        memory_info["memory_frequency"] = None
+        # memory_info["memory_frequency"] = None
         return memory_info
 
     # 获取磁盘使用率
     @staticmethod
     def get_disk_info():
-        disk_info = {}
+        disk_info = dict()
         disk_info["disk_percent"] = psutil.disk_usage('/').percent
         return disk_info
 
@@ -148,7 +156,7 @@ class HardwareInfo(object):
             "hostname": HardwareInfo.get_hostname(),
             "product": HardwareInfo.get_product(),
             "boot_time": HardwareInfo.get_boot_time(),
-            "cpu_info": get_cpu_info(),
+            "cpu_info": HardwareInfo.get_cpu_info(),
             "memory_info": HardwareInfo.get_memory_info(),
             "disk_info": HardwareInfo.get_disk_info(),
         }
@@ -159,7 +167,7 @@ class HardwareInfo(object):
         info = {
             "sn": HardwareInfo.get_sn(),
             "hostname": HardwareInfo.get_hostname(),
-            "cpu_percent": get_cpu_info().get("cpu_percent"),
+            "cpu_percent": HardwareInfo.get_cpu_info().get("cpu_percent"),
             "memory_percent": HardwareInfo.get_memory_info().get("memory_percent"),
             "disk_percent": HardwareInfo.get_disk_info().get("disk_percent"),
         }

@@ -14,6 +14,13 @@
 - 网站支持HTTPS
 
 
+# 0.1.2
+## 主要功能
+文档对于每个上报的信息都规定了 必须, 空值 2项信息   
+network新增加了一些static method   
+static method 增加 logger 传递   
+修正 report advance功能   
+
 # 0.1.1
 ## 发布日期
 2019-03-31

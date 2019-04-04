@@ -25,16 +25,16 @@ logger = logging.getLogger(__name__)
 
 class SystemInfo(object):
     def __init__(self, parameters=None):
-        self.type = platform.system()
-        self.series = distro.like()
-        self.name = distro.name()
-        self.codename = distro.codename()
-        self.major_version = distro.major_version()
-        self.minor_version = distro.minor_version()
-        self.kernel_version = platform.release()
-        self.architecture = platform.architecture()[0]
-        self.platform = platform.platform()
-        self.python_version = platform.python_version()
+        self.type = SystemInfo.get_type()
+        self.series = SystemInfo.get_series()
+        self.name = SystemInfo.get_name()
+        self.codename = SystemInfo.get_codename()
+        self.major_version = SystemInfo.get_major_version()
+        self.minor_version = SystemInfo.get_minor_version()
+        self.kernel_version = SystemInfo.get_kernel_version()
+        self.architecture = SystemInfo.get_architecture()
+        self.platform = SystemInfo.get_platform()
+        self.python_version = SystemInfo.get_python_version()
         # 是否桌面版本
         self.desktop_version = self.get_desktop_version()
         self.selenium_version = self.get_selenium_version()
@@ -52,62 +52,93 @@ class SystemInfo(object):
     # 操作系统类型, 例如Linux或Windows
     @staticmethod
     def get_type():
-        return platform.system()
+        type = platform.system()
+        if not type:
+            type = "UNKNOWN"
+        return type
 
     # 操作系统系列, 例如debian或redhat
     @staticmethod
     def get_series():
-        return distro.like()
+        series = distro.like()
+        if not series:
+            series = "UNKNOWN"
+        return series
 
     # 操作系统名称，例如ubuntu或centos
     @staticmethod
     def get_name():
-        return distro.name()
+        name = distro.name()
+        if not name:
+            name = "UNKNOWN"
+        return name
 
     # 操作系统发行代号, 例如strech或'Bionic Beaver'
     @staticmethod
     def get_codename():
-        return distro.codename()
+        codename = distro.codename()
+        if not codename:
+            codename = "UNKNOWN"
+        return codename
 
     # 操作系统主版本号
     @staticmethod
     def get_major_version():
-        return distro.major_version()
+        major_version = distro.major_version()
+        if not major_version:
+            major_version = "UNKNOWN"
+        return major_version
 
     # 操作系统次版本号
     @staticmethod
     def get_minor_version():
-        return distro.minor_version()
+        minor_version = distro.minor_version()
+        if not minor_version:
+            minor_version = "UNKNOWN"
+        return minor_version
 
     # 操作系统内核版本信息, 例如linux kernel的版本信息
     @staticmethod
     def get_kernel_version():
-        return platform.release()
+        kernel_version = platform.release()
+        if not kernel_version:
+            kernel_version = "UNKNOWN"
+        return kernel_version
 
     # 操作系统架构信息, 例如 amd64 或 arm
     @staticmethod
     def get_architecture():
-        return platform.architecture()[0]
+        architecture = "UNKNOWN"
+        architectures = platform.architecture()
+        if architectures and architectures[0]:
+            architecture = architectures[0]
+        return architecture
 
     # 综合平台信息，例如 'Linux-4.15.0-42-generic-x86_64-with-Ubuntu-18.04-bionic'
     @staticmethod
     def get_platform():
-        return platform.platform()
+        pf = platform.platform()
+        if not pf:
+            pf = "UNKNOWN"
+        return pf
 
     # python版本信息
     @staticmethod
     def get_python_version():
-        return platform.python_version()
+        pv = platform.python_version()
+        if not pv:
+            pv = "UNKNOWN"
+        return pv
 
     # 0代表不是桌面版,
     def get_desktop_version(self):
-        desktop_version = "0"
+        desktop_version = "UNKNOWN"
         if self.get_series() and "debian" == self.get_series().lower():
             status, output = subprocess.getstatusoutput("dpkg -l | grep gnome-desktop3-data")
-            if status == 0:
-                desktop_version = output.split()[2]
-        else:
-            desktop_version = "unknown series, just support debian"
+            if status == 0 and output:
+                osp = output.split()
+                if len(osp) > 2:
+                    desktop_version = osp[2]
         return desktop_version
 
     # selenium版本信息, 0代表未安装

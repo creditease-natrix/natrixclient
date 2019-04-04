@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import time
 from crontab import CronTab
+from logging.handlers import RotatingFileHandler
 from natrixclient.common import const
 from natrixclient.common.const import CONSOLE_LEVEL
 from natrixclient.common.const import CONSOLE_FILE_LEVEL
@@ -22,16 +23,17 @@ from natrixclient.command.nping import execute as ping_execute
 from natrixclient.command.ntraceroute import execute as traceroute_execute
 from natrixclient.command.ndns import execute as dns_execute
 from natrixclient.command.ncheck import execute as check_execute
-from natrixclient.command.nreport import execute as keepalive_execute
+from natrixclient.command.nreport import execute as report_execute
 from natrixclient.command.nhttp import execute as http_execute
 
 
-logger = logging.getLogger(__name__)
+ln = "natrixclient_console"
+logger = logging.getLogger(ln)
 logger.setLevel(CONSOLE_LEVEL)
 
 # create file handler which logs even debug messages
-fn = const.LOGGING_PATH + __name__.replace(".", "_") + '.log'
-fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
+fn = const.LOGGING_PATH + ln + '.log'
+fh = RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
 fh.setLevel(CONSOLE_FILE_LEVEL)
 fh_fmt = logging.Formatter(fmt=const.FILE_LOGGING_FORMAT, datefmt=const.FILE_LOGGING_DATE_FORMAT)
 fh.setFormatter(fh_fmt)
@@ -72,10 +74,10 @@ def parse_ping(args):
     request_parameters["timeout"] = args.timeout
     # terminal_request_receive_time
     request_parameters["terminal_request_receive_time"] = time.time()
-    request_parameters["logger"] = __name__
+    request_parameters["logger"] = ln
     response_parameters = dict()
     response_parameters["storage_type"] = StorageMode.CONSOLE
-    response_parameters["logger"] = __name__
+    response_parameters["logger"] = ln
     ping_execute(destination, request_parameters, response_parameters)
 
 
@@ -147,7 +149,7 @@ def parse_http_request_parameters(args):
     parameters["save_response_body"] = args.save_response_body
     parameters["terminal_request_receive_time"] = time.time()
     # logger
-    parameters["logger"] = __name__
+    parameters["logger"] = ln
     return parameters
 
 
@@ -155,7 +157,7 @@ def parse_http_response_parameters():
     parameters = dict()
     parameters["storage_type"] = StorageMode.CONSOLE
     # logger
-    parameters["logger"] = __name__
+    parameters["logger"] = ln
     return parameters
 
 
@@ -353,11 +355,11 @@ def parse_traceroute(args):
     # terminal_request_receive_time
     request_parameters["terminal_request_receive_time"] = time.time()
     # request logger
-    request_parameters["logger"] = __name__
+    request_parameters["logger"] = ln
     response_parameters = dict()
     response_parameters["storage_type"] = StorageMode.CONSOLE
     # response logger
-    response_parameters["logger"] = __name__
+    response_parameters["logger"] = ln
     traceroute_execute(destination, request_parameters, response_parameters)
 
 
@@ -412,10 +414,10 @@ def parse_dns(args):
     request_parameters["dns_method"] = args.dns_method
     request_parameters["dns_timeout"] = args.dns_timeout
     request_parameters["terminal_request_receive_time"] = time.time()
-    request_parameters["logger"] = __name__
+    request_parameters["logger"] = ln
     response_parameters = dict()
     response_parameters["storage_type"] = StorageMode.CONSOLE
-    response_parameters["logger"] = __name__
+    response_parameters["logger"] = ln
     dns_execute(destination, request_parameters, response_parameters)
 
 
@@ -446,45 +448,45 @@ def console_dns():
 
 def parse_check_basic(args):
     request_parameters = {"type": "basic",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = {"storage_type": StorageMode.CONSOLE,
-                           "logger": __name__}
+                           "logger": ln}
     check_execute(request_parameters=request_parameters,
                   response_parameters=response_parameters)
 
 
 def parse_check_advance(args):
     request_parameters = {"type": "advance",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = {"storage_type": StorageMode.CONSOLE,
-                           "logger": __name__}
+                           "logger": ln}
     check_execute(request_parameters=request_parameters,
                   response_parameters=response_parameters)
 
 
 def parse_check_hardware(args):
     request_parameters = {"type": "hardware",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = {"storage_type": StorageMode.CONSOLE,
-                           "logger": __name__}
+                           "logger": ln}
     check_execute(request_parameters=request_parameters,
                   response_parameters=response_parameters)
 
 
 def parse_check_system(args):
     request_parameters = {"type": "system",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = {"storage_type": StorageMode.CONSOLE,
-                           "logger": __name__}
+                           "logger": ln}
     check_execute(request_parameters=request_parameters,
                   response_parameters=response_parameters)
 
 
 def parse_check_network(args):
     request_parameters = {"type": "network",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = {"storage_type": StorageMode.CONSOLE,
-                           "logger": __name__}
+                           "logger": ln}
     check_execute(request_parameters=request_parameters,
                   response_parameters=response_parameters)
 
@@ -520,26 +522,26 @@ def console_check():
 
 def parse_report_basic(args):
     request_parameters = {"type": "basic",
-                          "logger": __name__}
+                          "logger": ln}
     response_parameters = dict()
     response_parameters["storage_type"] = StorageMode.RABBITMQ
     response_parameters["storage_queue"] = const.QUEUE_KEEP_ALIVE_BASIC
     response_parameters["storage_routing"] = const.ROUTING_KEEP_ALIVE_BASIC
-    response_parameters["logger"] = __name__
-    keepalive_execute(request_parameters=request_parameters,
-                      response_parameters=response_parameters)
+    response_parameters["logger"] = ln
+    report_execute(request_parameters=request_parameters,
+                   response_parameters=response_parameters)
 
 
 def parse_report_advance(args):
-    request_parameters = {"type": "basic",
-                          "logger": __name__}
+    request_parameters = {"type": "advance",
+                          "logger": ln}
     response_parameters = dict()
     response_parameters["storage_type"] = StorageMode.RABBITMQ
     response_parameters["storage_queue"] = const.QUEUE_KEEP_ALIVE_ADVANCE
     response_parameters["storage_routing"] = const.ROUTING_KEEP_ALIVE_ADVANCE
-    response_parameters["logger"] = __name__
-    keepalive_execute(request_parameters=request_parameters,
-                      response_parameters=response_parameters)
+    response_parameters["logger"] = ln
+    report_execute(request_parameters=request_parameters,
+                   response_parameters=response_parameters)
 
 
 # subcommand - report

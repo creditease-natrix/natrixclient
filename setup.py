@@ -84,7 +84,7 @@ setuptools.setup(
     package_data=package_data,
     include_package_data=True,
     platforms=["RedHat", "Ubuntu", "Raspbian"],
-    python_requires=">=3.4",
+    python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*",
     install_requires=install_requires,
     tests_require=test_requires,
     scripts=["bin/natrix"],

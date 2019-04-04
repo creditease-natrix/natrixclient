@@ -4,6 +4,7 @@
 
 import logging
 import time
+from logging.handlers import RotatingFileHandler
 from natrixclient.common import const
 from natrixclient.common.const import API_LEVEL
 from natrixclient.common.const import API_FILE_LEVEL
@@ -31,12 +32,13 @@ result = natrixclient.ping("www.baidu.com", params=params)
 """
 
 
-logger = logging.getLogger(__name__)
+ln = "natrixclient_api"
+logger = logging.getLogger(ln)
 logger.setLevel(API_LEVEL)
 
 # create file handler which logs even debug messages
-fn = const.LOGGING_PATH + __name__.replace(".", "_") + '.log'
-fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
+fn = const.LOGGING_PATH + ln + '.log'
+fh = RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
 fh.setLevel(API_FILE_LEVEL)
 fh_fmt = logging.Formatter(fmt=const.FILE_LOGGING_FORMAT, datefmt=const.FILE_LOGGING_DATE_FORMAT)
 fh.setFormatter(fh_fmt)
@@ -76,7 +78,7 @@ class NatrixClientAPI(object):
             request_parameters["interface"] = parameters.get("interface")
         # terminal_request_receive_time
         request_parameters["terminal_request_receive_time"] = time.time()
-        request_parameters["logger"] = __name__
+        request_parameters["logger"] = ln
         pingobj = PingTest(destination, request_parameters)
         result = pingobj.ping()
         result["stamp"]["terminal_response_return_time"] = time.time()
@@ -106,7 +108,7 @@ class NatrixClientAPI(object):
         if not parameters:
             parameters = dict()
         parameters["terminal_request_receive_time"] = time.time()
-        parameters["logger"] = __name__
+        parameters["logger"] = ln
         http_obj = HttpTest(operation, destination, parameters)
         http_result = http_obj.execute()
         http_result["stamp"]["terminal_response_return_time"] = time.time()
@@ -118,7 +120,7 @@ class NatrixClientAPI(object):
 
     def dns(self, destination, parameters):
         logger.debug("natrix api dns")
-        parameters["logger"] = __name__
+        parameters["logger"] = ln
         parameters["terminal_request_receive_time"] = time.time()
         dns_obj = DnsTest(destination, parameters)
         dns_result = dns_obj.execute()
@@ -127,7 +129,7 @@ class NatrixClientAPI(object):
 
     def traceroute(self, destination, parameters=None):
         logger.debug("natrix api traceroute")
-        parameters["logger"] = __name__
+        parameters["logger"] = ln
         parameters["terminal_request_receive_time"] = time.time()
         route_obj = RouteTest(destination, parameters)
         route_result = route_obj.execute()
@@ -136,7 +138,7 @@ class NatrixClientAPI(object):
 
     def check(self, parameters):
         logger.debug("natrix api check")
-        parameters["logger"] = __name__
+        parameters["logger"] = ln
         check_test = CheckTest(parameters)
         check_result = check_test.check()
         return check_result
