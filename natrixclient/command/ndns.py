@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import logging
 import socket
 import time
 import threading
-import dns.resolver
+import dns
 from natrixclient.common.const import DNS_METHOD
 from natrixclient.common.const import DNS_TIMEOUT
 from natrixclient.common.const import LOGGING_PATH

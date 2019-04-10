@@ -1,7 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import configparser
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 from natrixclient.common import const
 
 

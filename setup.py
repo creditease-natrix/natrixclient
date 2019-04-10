@@ -1,13 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+import io
 import os
 import sys
 import setuptools
 import natrixclient
 
 
-with open("README.md", "r", encoding='utf-8') as fh:
+with io.open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 # 'setup.py publish' shortcut.
