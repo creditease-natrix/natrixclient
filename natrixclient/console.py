@@ -31,6 +31,10 @@ ln = "natrixclient_console"
 logger = logging.getLogger(ln)
 logger.setLevel(CONSOLE_LEVEL)
 
+# create log path first
+if not os.path.exists(const.LOGGING_PATH):
+    os.makedirs(const.LOGGING_PATH)
+
 # create file handler which logs even debug messages
 fn = const.LOGGING_PATH + ln + '.log'
 fh = RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
@@ -667,7 +671,7 @@ def parse_crontab_clean(args):
 
 
 # subcommand - crontab
-def console_contab():
+def console_crontab():
     parser_crontab = subparsers.add_parser("crontab",
                                            help="Natrix Sub Command - crontab. "
                                                 "set crontab job for keepalive information to AMQP server")
