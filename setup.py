@@ -22,7 +22,6 @@ packages = [
     'natrixclient',
     'natrixclient/command',
     'natrixclient/command/check',
-    'natrixclient/command/dns',
     'natrixclient/command/http',
     'natrixclient/command/performance',
     'natrixclient/command/ping',

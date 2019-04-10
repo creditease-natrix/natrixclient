@@ -9,9 +9,9 @@
 import logging
 import psutil
 import socket
-import subprocess
 from natrixclient.command.check.system import SystemInfo
 from natrixclient.command.check.network import NetInfo
+from natrixclient.common.utils import get_command_output
 
 
 logger = logging.getLogger(__name__)
@@ -37,19 +37,19 @@ class HardwareInfo(object):
                 # The serial number can be found in /proc/cpuinfo
                 # cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2
                 command = "cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2"
-                status, output = subprocess.getstatusoutput(command)
+                status, output = get_command_output(command)
                 if status == 0:
                     sn = output
                 else:
                     logger.error("cannot get serial number from /proc/cpuinfo for raspbian")
             else:
                 command1 = "sudo dmidecode -t system | grep -i serial | cut -d ':' -f 2"
-                status1, output1 = subprocess.getstatusoutput(command1)
+                status1, output1 = get_command_output(command1)
                 if status1 == 0 and output1.strip() != "0":
                     sn = output1.strip()
                 else:
                     command2 = "sudo dmidecode -t system | grep UUID"
-                    status2, output2 = subprocess.getstatusoutput(command2)
+                    status2, output2 = get_command_output(command2)
                     if status2 == 0:
                         sn = output2.split(":")[1].strip()
                     else:
@@ -87,7 +87,7 @@ class HardwareInfo(object):
             else:
                 # need sudo
                 command = "dmidecode -t system | grep \"Product Name\""
-                status, output = subprocess.getstatusoutput(command)
+                status, output = get_command_output(command)
                 if status == 0:
                     product = output.split(":")[1].strip()
                 else:

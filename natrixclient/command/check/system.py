@@ -5,8 +5,8 @@
 import distro
 import logging
 import platform
-import subprocess
 import natrixclient
+from natrixclient.common.utils import get_command_output
 
 
 '''
@@ -134,7 +134,7 @@ class SystemInfo(object):
     def get_desktop_version(self):
         desktop_version = "UNKNOWN"
         if self.get_series() and "debian" == self.get_series().lower():
-            status, output = subprocess.getstatusoutput("dpkg -l | grep gnome-desktop3-data")
+            status, output = get_command_output("dpkg -l | grep gnome-desktop3-data")
             if status == 0 and output:
                 osp = output.split()
                 if len(osp) > 2:
@@ -149,7 +149,7 @@ class SystemInfo(object):
             command = "pip3 list | grep selenium"
         else:
             command = "pip list | grep selenium"
-        status, output = subprocess.getstatusoutput(command)
+        status, output = get_command_output(command)
         if status == 0:
             # some result like this
             # DEPRECATION: The default format will switch to columns in the future. You can use --format=(legacy|columns) (or define a format=(legacy|columns) in your pip.conf under the [list] section) to disable this warning.
@@ -165,7 +165,7 @@ class SystemInfo(object):
         chrome_version = "0"
         if self.get_series() and "debian" == self.get_series().lower():
             command = "chromium-browser --version"
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 chrome_version = output.split()[1]
         return chrome_version
@@ -178,14 +178,14 @@ class SystemInfo(object):
         chrome_webdriver_paths = ["/usr/local/bin/chromedriver", "/usr/lib/chromium-browser/chromedriver"]
         for path in chrome_webdriver_paths:
             command = "ls " + path
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 chrome_webdriver_path = path
             break
         # 如果在这2个目录中找到了, 就得到版本信息.
         if chrome_webdriver_path:
             command = path + " --version"
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 chrome_webdirver_version = output.split()[1]
         # 否则, 查找 chromedriver 文件, 得到版本信息
@@ -201,7 +201,7 @@ class SystemInfo(object):
         firefox_version = "0"
         if self.get_series() and "debian" == self.get_series().lower():
             command = "firefox --version"
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 firefox_version = output.split()[2]
         return firefox_version
@@ -214,14 +214,14 @@ class SystemInfo(object):
         firefox_webdriver_paths = ["/usr/local/bin/geckodriver"]
         for path in firefox_webdriver_paths:
             command = "ls " + path
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 firefox_webdriver_path = path
             break
         # 如果在这2个目录中找到了, 就得到版本信息.
         if firefox_webdriver_path:
             command = path + " --version"
-            status, output = subprocess.getstatusoutput(command)
+            status, output = get_command_output(command)
             if status == 0:
                 firefox_webdirver_version = output.split()[1]
         # 否则, 查找 chromedriver 文件, 得到版本信息

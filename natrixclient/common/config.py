@@ -2,11 +2,22 @@
 # -*- coding: utf-8 -*-
 
 
+import io
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 from natrixclient.common import const
+# for python2, IOError; for python3 FileNotFoundError
+try:
+    FileNotFoundError = FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+# for python2, OSError; for python3 FileNotFoundError
+try:
+    PermissionError = PermissionError
+except NameError:
+    PermissionError = OSError
 
 
 class NatrixConfig(object):
@@ -19,7 +30,7 @@ class NatrixConfig(object):
     def __init__(self):
         self.config_path = const.CONFIG_PATH
         try:
-            fnatrix = open(self.config_path, encoding='utf-8')
+            fnatrix = io.open(self.config_path, "r", encoding='utf-8')
             fnatrix.close()
             # configuration parser
             pconfig = configparser.ConfigParser()
@@ -34,15 +45,19 @@ class NatrixConfig(object):
             print("ERROR: Do not have permission to access File {}".format(self.config_path))
             # raise PermissionError()
 
-    def get_value(self, fkey=None, skey=None):
+    def get_value(self, section=None, option=None):
         if self.config_parser:
             try:
-                conf_value = self.config_parser[fkey][skey]
+                conf_value = self.config_parser[section][option]
+            except AttributeError:
+                # python 2
+                # TODO, add try ... except ...
+                conf_value = self.config_parser.get(section, option)
             except KeyError as k:
                 raise KeyError("Config Key Error:{}".format(k))
         else:
             try:
-                conf_name = fkey.strip().upper() + "_" + skey.strip().upper()
+                conf_name = section.strip().upper() + "_" + option.strip().upper()
                 conf_value = getattr(const, conf_name)
             except AttributeError as ae:
                 raise KeyError("Default Key Error:{}".format(conf_name))

@@ -6,6 +6,8 @@ import socket
 import time
 import threading
 import dns
+from dns import rdatatype
+from dns import resolver
 from natrixclient.common.const import DNS_METHOD
 from natrixclient.common.const import DNS_TIMEOUT
 from natrixclient.common.const import LOGGING_PATH
@@ -15,7 +17,7 @@ from natrixclient.common.const import FILE_LOGGING_DATE_FORMAT
 from natrixclient.common.const import THREAD_LOGGING_FORMAT
 from natrixclient.common.const import DnsMethod
 from natrixclient.command.check.iplocation import IpLocation
-from natrixclient.command.dns.dnserror import DnsError
+from natrixclient.command.ndnserror import DnsError
 from natrixclient.command.storage import storage
 
 
@@ -36,7 +38,7 @@ def execute(destination, request_parameters, response_parameters):
         global logger
         logger = logging.getLogger(request_parameters.get("logger"))
         add_logger_handler(logger)
-    logger.debug("=====================DNS EXECUTE======================")
+    logger.info("=====================DNS EXECUTE======================")
     # execute dns query
     DnsThread(destination, request_parameters, response_parameters).start()
 
@@ -84,16 +86,16 @@ class DnsTest(object):
         self.dns_method = parameters.get("dns_method", DNS_METHOD)
         self.dns_timeout = parameters.get("dns_timeout", DNS_TIMEOUT)
         if self.dns_method.lower() == DnsMethod.A.value:
-            self.rdtype = dns.rdatatype.A
+            self.rdtype = rdatatype.A
         elif self.dns_method.lower() == DnsMethod.CNAME.value:
-            self.rdtype = dns.rdatatype.CNAME
+            self.rdtype = rdatatype.CNAME
         elif self.dns_method.lower() == DnsMethod.NS.value:
-            self.rdtype = dns.rdatatype.NS
+            self.rdtype = rdatatype.NS
         elif self.dns_method.lower() == DnsMethod.MX.value:
-            self.rdtype = dns.rdatatype.MX
+            self.rdtype = rdatatype.MX
         else:
             logger.error("Unknown Type {}, will use default {}".format(self.dns_method, DNS_METHOD))
-            self.rdtype = dns.rdatatype.A
+            self.rdtype = rdatatype.A
 
     def execute(self):
         data = dict()
@@ -114,11 +116,11 @@ class DnsTest(object):
             except dns.exception.Timeout as e:
                 logger.exception("dns timeout exception")
                 return DnsError(url=self.destination, error=e, parameters=self.parameters).dns_timeout_error()
-            except (dns.resolver.NXDOMAIN, socket.gaierror) as e:
+            except (resolver.NXDOMAIN, socket.gaierror) as e:
                 logger.exception("dns server exception")
                 return DnsError(url=self.destination, error=e, parameters=self.parameters).dns_server_error()
         else:
-            dns_servers = dns.resolver.get_default_resolver().nameservers
+            dns_servers = resolver.get_default_resolver().nameservers
             if not dns_servers:
                 logger.error("do not have dns servers")
                 return DnsError(url=self.destination, parameters=self.parameters).miss_default_error()
@@ -139,7 +141,7 @@ class DnsTest(object):
                     timeout_flag += 1
                     if timeout_flag + dns_server_flag == len(dns_servers):
                         return DnsError(url=self.destination, error=e, parameters=self.parameters).dns_timeout_error()
-                except (dns.resolver.NXDOMAIN, socket.gaierror) as e:
+                except (resolver.NXDOMAIN, socket.gaierror) as e:
                     logger.exception("dns server {} got server exception".format(str(dns_server)))
                     dns_server_flag += 1
                     if timeout_flag + dns_server_flag == len(dns_servers):
@@ -152,7 +154,7 @@ class DnsTest(object):
         for queryans in answer:
             for item in queryans.items:
                 # A记录 又称IP指向
-                if item.rdtype == dns.rdatatype.A:
+                if item.rdtype == rdatatype.A:
                     ip_dict = dict()
                     ip = item.address
                     ip_dict["ip"] = ip
@@ -160,13 +162,13 @@ class DnsTest(object):
                     ip_dict["location"] = location
                     ip_list.append(ip_dict)
                 #  CNAME 通常称别名指向
-                elif item.rdtype == dns.rdatatype.CNAME:
+                elif item.rdtype == rdatatype.CNAME:
                     cname_list.append(str(item.target))
                 # MAIL记录
-                elif item.rdtype == dns.rdatatype.MX:
+                elif item.rdtype == rdatatype.MX:
                     mx_list.append(str(item.exchange))
                 # NS记录
-                elif item.rdtype == dns.rdatatype.NS:
+                elif item.rdtype == rdatatype.NS:
                     ns_list.append(str(item.target))
 
         if self.dns_method == "mx":
