@@ -197,7 +197,7 @@ class HttpThread(threading.Thread):
         self.response_parameters = response_parameters
 
     def run(self):
-        action_msg = "http {} {}".format(self.operation.value, self.destination)
+        action_msg = "http {} {}".format(self.operation, self.destination)
         http_obj = HttpTest(self.operation, self.destination, self.request_parameters)
         logger.debug("starting {} ......".format(action_msg))
         http_dict = http_obj.execute()

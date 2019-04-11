@@ -4,7 +4,6 @@
 
 import logging
 from enum import Enum
-from enum import unique
 
 
 # configuration settings
@@ -97,7 +96,6 @@ RABBITMQ_FILE_LEVEL = logging.DEBUG
 RABBITMQ_STREAM_LEVEL = logging.INFO
 
 
-@unique
 class Command(Enum):
     PING = "ping"
     TRACEROUTE = "traceroute"
@@ -107,7 +105,6 @@ class Command(Enum):
     CHECK = "check"
 
 
-@unique
 class StorageMode(Enum):
     RABBITMQ = "rabbitmq"
     CONSOLE = "console"
@@ -115,14 +112,12 @@ class StorageMode(Enum):
     FILE = "file"
 
 
-@unique
 class TracerouteProtocol(Enum):
     ICMP = "icmp"
     TCP = "tcp"
     UDP = "udp"
 
 
-@unique
 class DnsMethod(Enum):
     A = "a"
     CNAME = "cname"
@@ -130,7 +125,6 @@ class DnsMethod(Enum):
     NS = "ns"
 
 
-@unique
 class HttpOperation(Enum):
     GET = "get"
     POST = "post"
@@ -138,7 +132,6 @@ class HttpOperation(Enum):
     DELETE = "delete"
 
 
-@unique
 class AuthType(Enum):
     BASIC = "basic"
     DIGEST = "digest"

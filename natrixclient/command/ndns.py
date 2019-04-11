@@ -85,13 +85,14 @@ class DnsTest(object):
         self.dns_server = parameters.get("dns_server", None)
         self.dns_method = parameters.get("dns_method", DNS_METHOD)
         self.dns_timeout = parameters.get("dns_timeout", DNS_TIMEOUT)
-        if self.dns_method.lower() == DnsMethod.A.value:
+        # python2 self.dns_method.lower() == DnsMethod.A
+        if self.dns_method.lower() == DnsMethod.A or self.dns_method.lower() == DnsMethod.A.value:
             self.rdtype = rdatatype.A
-        elif self.dns_method.lower() == DnsMethod.CNAME.value:
+        elif self.dns_method.lower() == DnsMethod.CNAME or self.dns_method.lower() == DnsMethod.CNAME.value:
             self.rdtype = rdatatype.CNAME
-        elif self.dns_method.lower() == DnsMethod.NS.value:
+        elif self.dns_method.lower() == DnsMethod.NS or self.dns_method.lower() == DnsMethod.NS.value:
             self.rdtype = rdatatype.NS
-        elif self.dns_method.lower() == DnsMethod.MX.value:
+        elif self.dns_method.lower() == DnsMethod.MX or self.dns_method.lower() == DnsMethod.MX.value:
             self.rdtype = rdatatype.MX
         else:
             logger.error("Unknown Type {}, will use default {}".format(self.dns_method, DNS_METHOD))

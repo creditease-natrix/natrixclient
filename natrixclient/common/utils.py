@@ -3,18 +3,16 @@
 
 
 import logging
-import subprocess
+
+try:
+    from subprocess import getstatusoutput
+except ImportError:
+    from commands import getstatusoutput
 
 
 logger = logging.getLogger(__name__)
 
 
 def get_command_output(command):
-    try:
-        # python 3
-        status, output = subprocess.getstatusoutput(command)
-    except AttributeError:
-        # python 2
-        import commands
-        status, output = commands.getstatusoutput(command)
+    status, output = getstatusoutput(command)
     return status, output
