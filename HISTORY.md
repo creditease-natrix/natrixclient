@@ -14,6 +14,19 @@
 - 网站支持HTTPS
 
 
+# 0.1.3
+## 主要功能
+通过如下操作系统测试
+raspbian wheezy
+raspbian jessie
+raspbian strech
+ubuntu 18
+centos 7
+
+通过如下Python测试
+python 2.7
+python 3.4 + 
+
 # 0.1.2
 ## 主要功能
 文档对于每个上报的信息都规定了 必须, 空值 2项信息   
