@@ -15,81 +15,124 @@ natrixclient是配合Natrix的功能，安装在终端上的客户端软件，�
 ## 必要条件
 
 1. 必须是root用户
-2. 目前只支持 python >= 3.2
+2. 目前只支持 python >=2.7, >= 3.4
 
 ## 测试矩阵
 
-
-
 | 操作系统 \| 硬件      | 树莓派2 | 树梅派3B | X86-64 |
 | --------------- | ---- | ----- | ------ |
-| raspbian wheezy |      |       |        |
+| raspbian wheezy | Y    |       |        |
 | raspbian jessie |      | Y     |        |
 | raspbian strech |      | Y     |        |
 | ubuntu 18       |      |       | Y      |
-| centos 7        |      | Y     |        |
+| centos 7        |      |       | Y      |
 | windows 7       |      |       |        |
 | windows 10      |      |       |        |
 
-## 安装必要软件
+## 更新系统
 
-### Python2.x
+推荐更新系统到当前最新版本
 
-```
-sudo apt-get install libcurl4-openssl-dev
-sudo apt-get install python-dev 
-sudo apt-get install libevent-dev
-sudo apt-get install libssl-dev
-```
-
-升级pip
+### debian系
 
 ```
-pip install --upgrade pip
+sudo apt-get update -y
+sudo apt-get upgrade -y
 ```
 
-升级setuptools
+### rhel系
 
 ```
-pip install --upgrade setuptools
+yum update -y
 ```
 
-### Python3.x
+## 安装Python
+
+### debian系
+
+#### Python2
 
 ```
-sudo apt-get install libcurl4-openssl-dev
-sudo apt-get install python3-dev
-sudo apt-get install libevent-dev
-sudo apt-get install libssl-dev
+sudo apt-get install python python-pip python-dev
 ```
 
-升级pip
+#### Python3
 
 ```
-pip3 install --upgrade pip
+sudo apt-get install python3 python3-pip python3-dev
 ```
 
-升级setuptools
+### rhel系
+
+#### Python2
 
 ```
-pip3 install --upgrade setuptools
+sudo yum install python python-pip python-dev
 ```
 
-
-
-## 创建相关文档
+#### Python3
 
 ```
-sudo mkdir -p /var/log/natrix
+sudo yum install python36 python36-pip python3-dev
+```
+
+### 升级setuptools
+
+有些python中自带的setuptools版本太低，导致问题，建议升级setuptools
+
+#### Python2
+
+```
+pip install -U setuptools
+```
+
+#### Python3
+
+```
+pip3 install -U setuptools
+```
+
+## 安装其他软件
+
+由于natrixclient使用了pycurl的包等，所以也需要安装一些其他的相关软件
+
+### debian系
+
+```
+sudo apt-get install libcurl4-openssl-dev libevent-dev libssl-dev
+```
+
+### rhel系
+
+```
+sudo yum install gcc libffi-devel openssl-devel libcurl-devel libevent-devel
 ```
 
 
 
 ## 安装Natrixclient
 
-必须使用root权限**
+### 注意
 
-首先要升级一下setuptools, 太老的版本可能会有问题
+**必须使用root权限**
+
+### 确认安装位置
+
+安装之前，请确认好本机的python版本，
+
+### 默认安装
+
+```
+pip install natrixclient
+```
+
+### Python2安装
+
+```
+pip install natrixclient
+```
+
+### Python 3安装
 
 ```
 pip3 install natrixclient
@@ -97,16 +140,36 @@ pip3 install natrixclient
 
 ## 初始化
 
-```
-natrix service init
-```
-
 初始化主要完成如下事项
 
 - 创建配置文件目录 /etc/natrix
 - 拷贝配置文件模版和脚本到配置文件目录
 - 创建日志文件目录 /var/log/natrix
 - 创建systemctl服务
+
+### 默认初始化
+
+安装natrixclient使用**默认安装**，使用默认初始化就行了
+
+```
+natrix service init
+```
+
+### Python2初始化
+
+安装natrixclient使用**python2安装**，使用默认初始化就行了
+
+```
+natrix service init -p 2
+```
+
+### Python3初始化
+
+安装natrixclient使用**python3安装**，使用默认初始化就行了
+
+```
+natrix service init -p 3
+```
 
 ## 配置文件修改
 
