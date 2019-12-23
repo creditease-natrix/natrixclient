@@ -6,7 +6,7 @@ After=rc-local.service
 Type=simple
 User=root
 Group=root
-WorkingDirectory=/etc/natrix/
+WorkingDirectory=/etc/natrixclient/
 ExecStart=/usr/bin/python3 natrixclient.daemon start
 Restart=always
 

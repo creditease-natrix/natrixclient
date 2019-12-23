@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
 import io
 try:
     import configparser
@@ -27,6 +25,7 @@ class NatrixConfig(object):
     2. configuration file (default /etc/natrix/natrix.ini)
     3. const.py
     """
+
     def __init__(self):
         self.config_path = const.CONFIG_PATH
         try:
@@ -36,6 +35,7 @@ class NatrixConfig(object):
             pconfig = configparser.ConfigParser()
             pconfig.read(self.config_path)
             self.config_parser = pconfig
+            return
         except FileNotFoundError:
             # TODO, throw exception
             print("ERROR: Cannot find File {}".format(self.config_path))
@@ -46,7 +46,7 @@ class NatrixConfig(object):
             # raise PermissionError()
 
     def get_value(self, section=None, option=None):
-        if self.config_parser:
+        if hasattr(self, "config_parser"):
             try:
                 conf_value = self.config_parser[section][option]
             except AttributeError:
@@ -62,3 +62,4 @@ class NatrixConfig(object):
             except AttributeError as ae:
                 raise KeyError("Default Key Error:{}".format(conf_name))
         return conf_value
+

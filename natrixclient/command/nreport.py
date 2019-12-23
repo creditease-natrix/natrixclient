@@ -18,18 +18,21 @@ logger = logging.getLogger(__name__)
 
 def add_logger_handler(logger):
     fn = LOGGING_PATH + 'natrixclient_report.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
+    fh = logging.handlers.WatchedFileHandler(filename=fn)
+    fh.setLevel(logging.INFO)
     fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
     fh.setFormatter(fh_fmt)
     logger.addHandler(fh)
 
 
+add_logger_handler(logger)
+
+
 def execute(request_parameters, response_parameters):
-    if request_parameters.get("logger"):
-        global logger
-        logger = logging.getLogger(request_parameters.get("logger"))
-        add_logger_handler(logger)
+    # if request_parameters.get("logger"):
+    #     global logger
+    #     logger = logging.getLogger(request_parameters.get("logger"))
+    #     add_logger_handler(logger)
     logger.info("==================REPORT EXECUTE========================")
     ReportThread(request_parameters=request_parameters,
                  response_parameters=response_parameters).start()

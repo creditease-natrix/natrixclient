@@ -1,38 +1,17 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import json
-import logging
 import pika
 import time
-from natrixclient.common.const import LOGGING_PATH
-from natrixclient.common.const import FILE_MAX_BYTES
-from natrixclient.common.const import FILE_BACKUP_COUNTS
-from natrixclient.common.const import FILE_LOGGING_DATE_FORMAT
-from natrixclient.common.const import THREAD_LOGGING_FORMAT
 from natrixclient.common.const import StorageMode
 from natrixclient.common.config import NatrixConfig
+from natrixclient.common.natrix_logging import NatrixLogging
 
 
-logger = logging.getLogger(__name__)
-
-
-def add_logger_handler(logger):
-    fn = LOGGING_PATH + 'natrixclient_storage.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
-    fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
-    fh.setFormatter(fh_fmt)
-    logger.addHandler(fh)
+logger = NatrixLogging(__name__)
 
 
 def storage(result, parameters):
-    # logger
-    if parameters.get("logger"):
-        global logger
-        logger = logging.getLogger(parameters.get("logger"))
-        add_logger_handler(logger)
-    # terminal_response_return_time
     if result.get("stamp"):
         result["stamp"]["terminal_response_return_time"] = time.time()
     storage_type = parameters.get("storage_type")
@@ -48,8 +27,11 @@ def storage(result, parameters):
         file(result)
     elif storage_type == StorageMode.RABBITMQ:
         logger.debug("natrix result will save to rabbitmq")
-        logger.debug(result)
         rabbitmq(result, parameters)
+    elif storage_type == StorageMode.MQTT:
+        logger.debug("natrix result will be transfered as mqtt")
+        mqttbackend(result, parameters)
+
     else:
         logger.error("do not support storage type {}, will display in console as default")
         console(result)
@@ -62,7 +44,6 @@ def console(result):
 
 
 def rabbitmq(result, parameters):
-    logger.debug("storage result: {}".format(result))
     config = NatrixConfig()
     host = config.get_value("RABBITMQ", "host")
     port = config.get_value("RABBITMQ", "port")
@@ -85,7 +66,7 @@ def rabbitmq(result, parameters):
 
     # 声明queue, 针对需要目标url/ip的命令， 如dns, traceroute, ping, http
     if queue_name:
-        channel.queue_declare(queue=queue_name, auto_delete=True)
+        channel.queue_declare(queue=queue_name, durable=True)
         # RabbitMQ a message can never be sent directly to the queue, it always needs to go through an exchange.
         channel.basic_publish(exchange='',
                               routing_key=routing_key,
@@ -96,6 +77,10 @@ def rabbitmq(result, parameters):
         logger.error("storage queue name is empty")
     connection.close()
 
+
+def mqttbackend(result, parameters):
+    # TODO:
+    pass
 
 def restful(result):
     logger.info(result)

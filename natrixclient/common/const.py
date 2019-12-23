@@ -1,16 +1,15 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 
 import logging
 from enum import Enum
 
 
 # configuration settings
-CONFIG_DIR = "/etc/natrix/"
-CONFIG_FILE = "natrix.ini"
-CONFIG_PATH = "/etc/natrix/natrix.ini"
-
+CONFIG_DIR = "/etc/natrixclient/"
+CONFIG_FILE = "natrixclient.ini"
+CONFIG_PATH = "/etc/natrixclient/natrixclient.ini"
+COMMON_LOG_DIRECTORY = "/var/log/natrixclient"
+COMMON_LOG_LEVEL = "info"
 # PING
 PING_COUNT = 3
 # seconds
@@ -44,11 +43,11 @@ DNS_TIMEOUT = 60
 
 # crontab
 CRONTAB_BASIC_MINUTES = 1
-CRONTAB_BASIC_COMMAND = "sudo natrix report basic >> /var/log/natrix/natrixclient_crontab_basic.log 2>&1"
-CRONTAB_BASIC_COMMENT = "natrix basic keep alive crontab, added by natrixclient"
+CRONTAB_BASIC_COMMAND = "/usr/local/bin/natrixclient report basic >> /var/log/natrix/natrixclient_crontab_basic.log 2>&1"
+CRONTAB_BASIC_COMMENT = "natrix client basic keep alive crontab, added by natrixclient"
 CRONTAB_ADVANCE_MINUTES = 30
-CRONTAB_ADVANCE_COMMAND = "sudo natrix report advance >> /var/log/natrix/natrixclient_crontab_advance.log 2>&1"
-CRONTAB_ADVANCE_COMMENT = "natrix advanced keep alive crontab, added by natrixclient"
+CRONTAB_ADVANCE_COMMAND = "/usr/local/bin/natrixclient report advance >> /var/log/natrix/natrixclient_crontab_advance.log 2>&1"
+CRONTAB_ADVANCE_COMMENT = "natrix client advanced keep alive crontab, added by natrixclient"
 CRONTAB_REBOOT_HOURS = 1
 CRONTAB_REBOOT_MINUTES = 30
 CRONTAB_REBOOT_COMMAND = "sudo reboot"
@@ -72,7 +71,7 @@ REQUEST_STORAGE_QUEUE_NAME = "natrix_dial_response"
 REQUEST_STORAGE_ROUTING_KEY = "natrix_dial_response"
 
 # logging
-LOGGING_PATH = "/var/log/natrix/"
+LOGGING_PATH = "/var/log/natrixclient/"
 FILE_LOGGING_FORMAT = "%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s"
 FILE_LOGGING_DATE_FORMAT = "%Y/%m/%d %H:%M:%S"
 FILE_MODE = 'a'
@@ -86,10 +85,6 @@ CONSOLE_LOGGING_FORMAT = "%(message)s"
 CONSOLE_LEVEL = logging.DEBUG
 CONSOLE_FILE_LEVEL = logging.DEBUG
 CONSOLE_STREAM_LEVEL = logging.INFO
-# api log level
-API_LEVEL = logging.DEBUG
-API_FILE_LEVEL = logging.DEBUG
-API_STREAM_LEVEL = logging.INFO
 # rabbitmq log level
 RABBITMQ_LEVEL = logging.DEBUG
 RABBITMQ_FILE_LEVEL = logging.DEBUG
@@ -107,6 +102,7 @@ class Command(Enum):
 
 class StorageMode(Enum):
     RABBITMQ = "rabbitmq"
+    MQTT = "mqtt"
     CONSOLE = "console"
     RESTFUL = "restful"
     FILE = "file"

@@ -51,11 +51,14 @@ logger = logging.getLogger(__name__)
 
 def add_logger_handler(logger):
     fn = LOGGING_PATH + 'natrixclient_traceroute.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
+    fh = logging.handlers.WatchedFileHandler(filename=fn)
+    fh.setLevel(logging.INFO)
     fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
     fh.setFormatter(fh_fmt)
     logger.addHandler(fh)
+
+
+add_logger_handler(logger)
 
 
 def execute(destination, request_parameters, response_parameters):
@@ -94,10 +97,10 @@ class RouteTest(object):
         # parameters
         self.parameters = parameters
         # logger
-        if parameters.get("logger"):
-            global logger
-            logger = logging.getLogger(parameters.get("logger"))
-            add_logger_handler(logger)
+        # if parameters.get("logger"):
+        #     global logger
+        #     logger = logging.getLogger(parameters.get("logger"))
+        #     add_logger_handler(logger)
         self.server_request_generate_time = parameters.get("server_request_generate_time")
         self.terminal_request_receive_time = parameters.get("terminal_request_receive_time")
         self.traceroute_icmp = parameters.get("traceroute_icmp", TRACEROUTE_ICMP)
@@ -130,7 +133,13 @@ class RouteTest(object):
                 error_info = {"errorcode": 100, "errorinfo": erromsg}
                 result = {
                     "status": 1,
-                    "data": error_info
+                    "data": error_info,
+                    "stamp": {
+                        "server_request_generate_time": self.server_request_generate_time,
+                        "terminal_request_receive_time": self.terminal_request_receive_time,
+                        "terminal_request_send_time": time.time(),
+                        "terminal_response_receive_time": time.time(),
+                    }
                 }
                 return result
 
@@ -237,7 +246,7 @@ class RouteTest(object):
                 route = {'ip': '*', 'hostname': '*', 'location': None, 'response_times': 0}
                 items = items[1:]
             elif items.index('ms') == 3:
-                logger.debug("parse traceroute like: \"bogon (10.199.13.51)  6.527 ms\"")
+                logger.debug("parse traceroute like: \"bogon (192.168.1.1)  6.527 ms\"")
                 hostname = items[0].strip()
                 ip = items[1].strip('(').strip(')').strip()
                 ipt = IpLocation(self.parameters)

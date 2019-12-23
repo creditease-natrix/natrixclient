@@ -58,7 +58,7 @@ class NetInfo(object):
             else:
                 logger.error("ping website {} using interface {} got empty result".format(website, interface))
         except Exception as e:
-            logger.exception("ping website {} using interface {} cause exception: {}".format(website, interface, e))
+            logger.error("ping website {} using interface {} cause exception: {}".format(website, interface, e))
         return access
 
     # 请输入互联网网站
@@ -86,6 +86,8 @@ class NetInfo(object):
         except KeyError as ke:
             logger.exception("fail to get NETWORK:internet_websites from configuration file {}. \nexception: {}".
                                   format(CONFIG_PATH, str(ke)))
+        except Exception as e:
+            logger.error('Test internet with exception: {}'.format(e))
         return access
 
     # 请输入公司内网网站域名
@@ -113,6 +115,8 @@ class NetInfo(object):
         except KeyError as ke:
             logger.exception("fail to get NETWORK:corporate_websites from configuration file {}. \nexception: {}".
                                   format(CONFIG_PATH, str(ke)))
+        except Exception as e:
+            logger.error("Test corporate with exception: {}".format(e))
         return access
 
     # 请输入公司局域网IP
@@ -139,6 +143,8 @@ class NetInfo(object):
         except KeyError as ke:
             logger.exception("fail to get NETWORK:intranet_websites from configuration file {}. \nexception: {}".
                                   format(CONFIG_PATH, str(ke)))
+        except Exception as e:
+            logger.error("Test intranet with exception: {}".format(e))
         return access
 
     @staticmethod
@@ -236,9 +242,9 @@ class NetInfo(object):
                    valid_lft forever preferred_lft forever
             2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
                 link/ether b8:27:eb:f9:41:74 brd ff:ff:ff:ff:ff:ff
-                inet 10.10.36.222/24 brd 10.10.36.255 scope global eth0
+                inet 192.168.1.1/24 brd 10.10.36.255 scope global eth0
                    valid_lft forever preferred_lft forever
-                inet 10.10.36.55/24 brd 10.10.36.255 scope global secondary eth0
+                inet 192.168.2.1/24 brd 10.10.36.255 scope global secondary eth0
                    valid_lft forever preferred_lft forever
                 inet6 fe80::ba27:ebff:fef9:4174/64 scope link 
                    valid_lft forever preferred_lft forever
@@ -358,9 +364,9 @@ class NetInfo(object):
                    valid_lft forever preferred_lft forever
             2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
                 link/ether b8:27:eb:f9:41:74 brd ff:ff:ff:ff:ff:ff
-                inet 10.10.36.222/24 brd 10.10.36.255 scope global eth0
+                inet 192.168.1.1/24 brd 192.168.1.255 scope global eth0
                    valid_lft forever preferred_lft forever
-                inet 10.10.36.55/24 brd 10.10.36.255 scope global secondary eth0
+                inet 192.168.2.1/24 brd 192.168.2.255 scope global secondary eth0
                    valid_lft forever preferred_lft forever
                 inet6 fe80::ba27:ebff:fef9:4174/64 scope link 
                    valid_lft forever preferred_lft forever

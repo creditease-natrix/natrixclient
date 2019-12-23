@@ -45,11 +45,14 @@ logger = logging.getLogger(__name__)
 
 def add_logger_handler(logger):
     fn = LOGGING_PATH + 'natrixclient_ping.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
+    fh = logging.handlers.WatchedFileHandler(filename=fn)
+    fh.setLevel(logging.INFO)
     fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
     fh.setFormatter(fh_fmt)
     logger.addHandler(fh)
+
+
+add_logger_handler(logger)
 
 
 def execute(destination, request_parameters, response_parameters):
@@ -90,11 +93,13 @@ class PingTest(object):
         self.destination = destination
         # parameters
         self.parameters = parameters
-        # logger
-        if parameters.get("logger"):
-            global logger
-            logger = logging.getLogger(parameters.get("logger"))
-            add_logger_handler(logger)
+
+        # # logger
+        # if parameters.get("logger"):
+        #     global logger
+        #     logger = logging.getLogger(parameters.get("logger"))
+        #     add_logger_handler(logger)
+
         self.server_request_generate_time = parameters.get("server_request_generate_time")
         self.terminal_request_receive_time = parameters.get("terminal_request_receive_time")
         self.terminal_interface = parameters.get("interface", None)
@@ -118,11 +123,20 @@ class PingTest(object):
             logger.debug("ending ping {} ......".format(self.destination))
             terminal_response_receive_time = time.time()
         except Exception as e:
+            exc_msg = repr(e)
+            # import traceback
+            # exc_msg = traceback.format_exc()
             ping_result = {
                 "status": 1,
                 "data": {
-                    "errorinfo": e,
+                    "errorinfo": exc_msg,
                     "errorcode": 140
+                },
+                "stamp": {
+                    "server_request_generate_time": self.server_request_generate_time,
+                    "terminal_request_receive_time": self.terminal_request_receive_time,
+                    "terminal_request_send_time": terminal_request_send_time,
+                    "terminal_response_receive_time": time.time(),
                 }
             }
             return ping_result

@@ -4,6 +4,11 @@
 
 import os
 
+name = 'natrixclient'
+
+__all__ = [
+    'backends'
+]
 
 def version():
     version = "0"

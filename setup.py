@@ -20,6 +20,8 @@ if sys.argv[-1] == 'publish':
 
 packages = [
     'natrixclient',
+    'natrixclient/bin',
+    'natrixclient/backends',
     'natrixclient/command',
     'natrixclient/command/check',
     'natrixclient/command/http',
@@ -70,10 +72,10 @@ classifiers = [
 setuptools.setup(
     name="natrixclient",
     version=natrixclient.version(),
-    author="JamesZOU",
-    author_email="zouzhicheng@foxmail.com",
-    maintainer="JamesZOU",
-    maintainer_email="zouzhicheng@foxmail.com",
+    author="natrixgroup",
+    author_email="natrixgroup@163.com",
+    maintainer="natrixgroup",
+    maintainer_email="natrixgroup@163.com",
     description="Client For Natrix - An Open Source Cloud Automation Testing Project",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -83,9 +85,14 @@ setuptools.setup(
     package_data=package_data,
     include_package_data=True,
     platforms=["RedHat", "Ubuntu", "Raspbian"],
-    python_requires=">=2.7,!=3.0.*,!=3.1.*",
+    python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*",
     install_requires=install_requires,
     tests_require=test_requires,
-    scripts=["bin/natrix"],
+    scripts=["bin/natrixclient"],
     classifiers=classifiers,
+    entry_points = {
+        "console_scripts": [
+            'natrixclient = natrixclient.__main__:main'
+        ]
+    }
 )

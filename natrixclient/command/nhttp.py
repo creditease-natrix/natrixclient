@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import logging
 import pycurl
 import re
@@ -8,8 +7,6 @@ import time
 import threading
 from io import BytesIO
 from natrixclient.common.const import LOGGING_PATH
-from natrixclient.common.const import FILE_MAX_BYTES
-from natrixclient.common.const import FILE_BACKUP_COUNTS
 from natrixclient.common.const import FILE_LOGGING_DATE_FORMAT
 from natrixclient.common.const import HTTP_ALLOW_REDIRECTS
 from natrixclient.common.const import HTTP_MAX_REDIRECTS
@@ -169,19 +166,17 @@ logger = logging.getLogger(__name__)
 
 def add_logger_handler(logger):
     fn = LOGGING_PATH + 'natrixclient_http.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
+    fh = logging.handlers.WatchedFileHandler(filename=fn)
+    fh.setLevel(logging.INFO)
     fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
     fh.setFormatter(fh_fmt)
     logger.addHandler(fh)
 
 
+add_logger_handler(logger)
+
+
 def execute(operation, destination, request_parameters, response_parameters):
-    if request_parameters.get("logger"):
-        global logger
-        logger = logging.getLogger(request_parameters.get("logger"))
-        add_logger_handler(logger)
-    
     logger.info("==================HTTP EXECUTE========================")
     # TODO, need to check interface exist and connection
     # execute http
@@ -219,10 +214,10 @@ class HttpTest(object):
         # parameters
         self.parameters = parameters
         # logger
-        if parameters.get("logger"):
-            global logger
-            logger = logging.getLogger(parameters.get("logger"))
-            add_logger_handler(logger)
+        # if parameters.get("logger"):
+        #     global logger
+        #     logger = logging.getLogger(parameters.get("logger"))
+        #     add_logger_handler(logger)
         # 设置 HTTP VERSION
         # self.http_version = parameters.get("http_version", None)
         self.interface = parameters.get("interface", None)
@@ -529,8 +524,10 @@ class HttpTest(object):
 
         # 数据信息
         # 上传数据包大小
+        # Number of bytes uploaded
         size_upload = self.pcurl.getinfo(pycurl.SIZE_UPLOAD)
         # 下载数据包大小
+        # Number of bytes downloaded
         size_download = self.pcurl.getinfo(pycurl.SIZE_DOWNLOAD)
         # 上传速度
         speed_upload = self.pcurl.getinfo(pycurl.SPEED_UPLOAD)

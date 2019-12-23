@@ -11,8 +11,6 @@ from dns import resolver
 from natrixclient.common.const import DNS_METHOD
 from natrixclient.common.const import DNS_TIMEOUT
 from natrixclient.common.const import LOGGING_PATH
-from natrixclient.common.const import FILE_MAX_BYTES
-from natrixclient.common.const import FILE_BACKUP_COUNTS
 from natrixclient.common.const import FILE_LOGGING_DATE_FORMAT
 from natrixclient.common.const import THREAD_LOGGING_FORMAT
 from natrixclient.common.const import DnsMethod
@@ -26,11 +24,14 @@ logger = logging.getLogger(__name__)
 
 def add_logger_handler(logger):
     fn = LOGGING_PATH + 'natrixclient_dns.log'
-    fh = logging.handlers.RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-    fh.setLevel(logging.DEBUG)
+    fh = logging.handlers.WatchedFileHandler(filename=fn)
+    fh.setLevel(logging.INFO)
     fh_fmt = logging.Formatter(fmt=THREAD_LOGGING_FORMAT, datefmt=FILE_LOGGING_DATE_FORMAT)
     fh.setFormatter(fh_fmt)
     logger.addHandler(fh)
+
+
+add_logger_handler(logger)
 
 
 def execute(destination, request_parameters, response_parameters):
@@ -70,10 +71,10 @@ class DnsTest(object):
         self.destination = destination
         self.parameters = parameters
         # logger
-        if parameters.get("logger"):
-            global logger
-            logger = logging.getLogger(parameters.get("logger"))
-            add_logger_handler(logger)
+        # if parameters.get("logger"):
+        #     global logger
+        #     logger = logging.getLogger(parameters.get("logger"))
+        #     add_logger_handler(logger)
         # server_request_generate_time
         self.server_request_generate_time = parameters.get("server_request_generate_time")
         # terminal_request_receive_time

@@ -75,23 +75,35 @@ class HardwareInfo(object):
     # 对于其他的linux系统, 使用 dmidecode -t system | grep uuid
     @staticmethod
     def get_product():
-        product = "UNKNOWN"
-        if SystemInfo.get_type().strip().lower() == "linux":
-            if SystemInfo.get_name().strip().lower() == "raspbian":
+        product = ""
+        os_type = SystemInfo.get_type()
+        if os_type.strip().lower() == "linux":
+            if SystemInfo.get_name().strip().lower().find("raspbian") >= 0:
                 try:
                     f = open('/sys/firmware/devicetree/base/model', 'r')
                     product = f.read()
                     f.close()
-                except:
+                except Exception as e:
                     product = "get hardware product error in raspbian system"
             else:
                 # need sudo
-                command = "dmidecode -t system | grep \"Product Name\""
+                command = "dmidecode -t system"
                 status, output = get_command_output(command)
                 if status == 0:
-                    product = output.split(":")[1].strip()
+                    lines = output.splitlines()
+                    for line in lines:
+                        if line.strip().find("Manufacturer") >= 0:
+                            product = product + line.split(":")[1].strip()
+                        if line.strip().find("Product Name") >= 0:
+                            product = product + "/" + line.split(":")[1].strip()
+                        if line.strip().find("Version") >= 0:
+                            product = product + "/" + line.split(":")[1].strip()
                 else:
-                    product = "get hardware product error in unix-like system"
+                    product = "get hardware product error in linux system"
+        else:
+            product = "do not support non-linux operating system"
+
+        product = product.replace('\x00', '')
         return product
 
     # 获取开机时间
@@ -114,20 +126,25 @@ class HardwareInfo(object):
         #             if line.startswith('model name'):
         #                 cpu_model = line.split(':')[1].strip()
         #                 break
-        cpu_model = "UNKNOWN"
-        with open('/proc/cpuinfo') as fd:
-            for line in fd:
-                if line.startswith('model name'):
-                    cpu_model = line.split(':')[1].strip()
-                    break
-        cpu_info["cpu_model"] = cpu_model
-        # cpu 核心数
-        cpu_info["cpu_core"] = psutil.cpu_count()
-        # cpu 使用率
-        # psutil.cpu_percent(interval=20,percpu=False)
-        # interval：代表时间（秒），在这段时间内的cpu使用率
-        # percpu：选择总的使用率还是每个cpu的使用率。False为总体，True为单个，返回列表
-        cpu_info["cpu_percent"] = psutil.cpu_percent(interval)
+        try:
+            cpu_model = "UNKNOWN"
+            with open("/proc/cpuinfo") as fd:
+                for line in fd:
+                    if line.startswith('model name'):
+                        cpu_model = line.split(':')[1].strip()
+                        break
+            cpu_info["cpu_model"] = cpu_model
+            # cpu 核心数
+            cpu_info["cpu_core"] = psutil.cpu_count()
+            # cpu 使用率
+            # psutil.cpu_percent(interval=20,percpu=False)
+            # interval：代表时间（秒），在这段时间内的cpu使用率
+            # percpu：选择总的使用率还是每个cpu的使用率。False为总体，True为单个，返回列表
+            cpu_info["cpu_percent"] = psutil.cpu_percent(interval)
+        except FileNotFoundError:
+            logger.error("There is not /proc/cpuinfo file")
+        except Exception as e:
+            logger.error("An error occur when read cpu info: {}".format(e))
         return cpu_info
 
     @staticmethod

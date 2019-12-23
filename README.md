@@ -19,15 +19,14 @@ natrixclient是配合Natrix的功能，安装在终端上的客户端软件，�
 
 ## 测试矩阵
 
-| 操作系统 \| 硬件      | 树莓派2 | 树梅派3B | X86-64 |
-| --------------- | ---- | ----- | ------ |
-| raspbian wheezy | Y    |       |        |
-| raspbian jessie |      | Y     |        |
-| raspbian strech |      | Y     |        |
-| ubuntu 18       |      |       | Y      |
-| centos 7        |      |       | Y      |
-| windows 7       |      |       |        |
-| windows 10      |      |       |        |
+| 操作系统 \| 硬件      | 树梅派2/3B | X86-64 |
+| --------------- | ------- | ------ |
+| raspbian jessie | Y       |        |
+| raspbian strech | Y       |        |
+| ubuntu 18       |         | Y      |
+| centos 7        |         | Y      |
+| windows 7       |         |        |
+| windows 10      |         |        |
 
 ## 更新系统
 
@@ -53,13 +52,13 @@ yum update -y
 #### Python2
 
 ```
-sudo apt-get install python python-pip python-dev
+sudo apt-get -y install python python-pip python-dev
 ```
 
 #### Python3
 
 ```
-sudo apt-get install python3 python3-pip python3-dev
+sudo apt-get -y install python3 python3-pip python3-dev
 ```
 
 ### rhel系
@@ -67,13 +66,13 @@ sudo apt-get install python3 python3-pip python3-dev
 #### Python2
 
 ```
-sudo yum install python python-pip python-dev
+sudo yum -y install python python-pip python-dev
 ```
 
 #### Python3
 
 ```
-sudo yum install python36 python36-pip python3-dev
+sudo yum -y install python36 python36-pip python3-dev
 ```
 
 ### 升级setuptools
@@ -99,13 +98,13 @@ pip3 install -U setuptools
 ### debian系
 
 ```
-sudo apt-get install libcurl4-openssl-dev libevent-dev libssl-dev
+sudo apt-get -y install libcurl4-openssl-dev libevent-dev libssl-dev
 ```
 
 ### rhel系
 
 ```
-sudo yum install gcc libffi-devel openssl-devel libcurl-devel libevent-devel
+sudo yum -y install gcc libffi-devel openssl-devel libcurl-devel libevent-devel
 ```
 
 
@@ -581,23 +580,7 @@ status_code有如下值
 
 ### stamp_json
 
-```
-{
-    "server_request_generate_time": 12345678,
-    "terminal_request_receive_time": 123456,
-    "terminal_request_send_time": 123456,
-    "terminal_response_receive_time": 123456,
-    "terminal_response_return_time": 123456,
-}
-```
-
-| 字段                             | 类型   | 说明                                       | 备注   |
-| ------------------------------ | ---- | ---------------------------------------- | ---- |
-| server_request_generate_time   | time | 服务器向终端发送请求的时间戳                           |      |
-| terminal_request_receive_time  | time | 终端(树莓派)接收到服务器请求的时间戳                      |      |
-| terminal_request_send_time     | time | 终端(树莓派) 向 目的地址 发起请求的时间                   |      |
-| terminal_response_receive_time | time | 终端(树莓派) 接收到 目的地址 response 的时间            |      |
-| terminal_response_return_time  | time | 终端(树莓派) 接收到 处理完response, 发送给 natrix服务器 的时间 |      |
+请参考 [时间戳](#时间戳)
 
 ### data_json
 
@@ -612,7 +595,7 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 ```
 {
 	"destination": "www.baidu.com",
-	"destination_ip": "10.10.10.13"，
+	"destination_ip": "192.168.1.1"，
 	"destination_location": location_info,
 	"packet_send": 3,
     "packet_receive": 3,
@@ -624,18 +607,18 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 }
 ```
 
-| 字段                   | 类型     | 说明        | 备注   |
-| -------------------- | ------ | --------- | ---- |
-| destination          | string | 目的地址      |      |
-| destination_ip       | string | 目的地址IP    |      |
-| destination_location | json   | 目的地址的区域信息 |      |
-| packet_send          | int    | ping包发送数量 |      |
-| packet_receive       | int    | ping包接收数量 |      |
-| packet_loss          | int    | ping包丢弃数量 |      |
-| packet_size          | int    | ping包大小   |      |
-| avg_time             | time   | 平均时间      |      |
-| max_time             | time   | 最大时间      |      |
-| min_time             | time   | 最小时间      |      |
+| 字段                 | 类型   | 说明                  | 备注 |
+| -------------------- | ------ | --------------------- | ---- |
+| destination          | string | 目的地址              |      |
+| destination_ip       | string | 目的地址IP            |      |
+| destination_location | json   | 目的地址的区域信息    |      |
+| packet_send          | int    | ping包发送数量        |      |
+| packet_receive       | int    | ping包接收数量        |      |
+| packet_loss          | int    | ping包丢弃数量        |      |
+| packet_size          | int    | (单位 byte)ping包大小 |      |
+| avg_time             | time   | (单位 毫秒)平均时间   |      |
+| max_time             | time   | (单位 毫秒)最大时间   |      |
+| min_time             | time   | (单位 毫秒)最小时间   |      |
 
 #### location_json格式
 
@@ -841,23 +824,7 @@ status_code有如下值
 
 ### stamp_json
 
-```
-{
-    "server_request_generate_time": 12345678,
-    "terminal_request_receive_time": 123456,
-    "terminal_request_send_time": 123456,
-    "terminal_response_receive_time": 123456,
-    "terminal_response_return_time": 123456,
-}
-```
-
-| 字段                             | 类型   | 说明                                       | 备注   |
-| ------------------------------ | ---- | ---------------------------------------- | ---- |
-| server_request_generate_time   | time | 服务器向终端发送请求的时间戳                           |      |
-| terminal_request_receive_time  | time | 终端(树莓派)接收到服务器请求的时间戳                      |      |
-| terminal_request_send_time     | time | 终端(树莓派) 向 目的地址 发起请求的时间                   |      |
-| terminal_response_receive_time | time | 终端(树莓派) 接收到 目的地址 response 的时间            |      |
-| terminal_response_return_time  | time | 终端(树莓派) 接收到 处理完response, 发送给 natrix服务器 的时间 |      |
+请参考 [时间戳](#时间戳)
 
 ### data_json
 
@@ -898,13 +865,13 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 }
 ```
 
-| 字段             | 类型     | 说明   | 备注   |
-| -------------- | ------ | ---- | ---- |
-| seq            | int    | 序列号  |      |
-| ip             | string | IP   |      |
-| hostname       | string | 主机名  |      |
-| location       | json   | 位置信息 |      |
-| response_times | float  | 返回时间 |      |
+| 字段           | 类型   | 说明                | 备注 |
+| -------------- | ------ | ------------------- | ---- |
+| seq            | int    | 序列号              |      |
+| ip             | string | IP                  |      |
+| hostname       | string | 主机名              |      |
+| location       | json   | 位置信息            |      |
+| response_times | float  | (单位 毫秒)返回时间 |      |
 
 #### route_list格式
 
@@ -920,19 +887,19 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 
 ```
 {
-	"ip": "10.10.36.1",
+	"ip": "192.168.1.1",
 	"hostname": "bogon",
 	"location": location_json,
 	"response_times": 1.475
 }
 ```
 
-| 字段             | 类型     | 说明   | 备注   |
-| -------------- | ------ | ---- | ---- |
-| ip             | string | IP   |      |
-| location       | json   | 位置信息 |      |
-| hostname       | string | 主机名  |      |
-| response_times | float  | 返回时间 |      |
+| 字段           | 类型   | 说明                | 备注 |
+| -------------- | ------ | ------------------- | ---- |
+| ip             | string | IP                  |      |
+| location       | json   | 位置信息            |      |
+| hostname       | string | 主机名              |      |
+| response_times | float  | (单位 毫秒)返回时间 |      |
 
 #### location_json格式
 
@@ -1148,23 +1115,7 @@ status_code有如下值
 
 ### stamp_json
 
-```
-{
-    "server_request_generate_time": 12345678,
-    "terminal_request_receive_time": 123456,
-    "terminal_request_send_time": 123456,
-    "terminal_response_receive_time": 123456,
-    "terminal_response_return_time": 123456,
-}
-```
-
-| 字段                             | 类型   | 说明                                       | 备注   |
-| ------------------------------ | ---- | ---------------------------------------- | ---- |
-| server_request_generate_time   | time | 服务器向终端发送请求的时间戳                           |      |
-| terminal_request_receive_time  | time | 终端(树莓派)接收到服务器请求的时间戳                      |      |
-| terminal_request_send_time     | time | 终端(树莓派) 向 目的地址 发起请求的时间                   |      |
-| terminal_response_receive_time | time | 终端(树莓派) 接收到 目的地址 response 的时间            |      |
-| terminal_response_return_time  | time | 终端(树莓派) 接收到 处理完response, 发送给 natrix服务器 的时间 |      |
+请参考 [时间戳](#时间戳)
 
 ### data_json
 
@@ -1183,12 +1134,12 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 }
 ```
 
-| 字段          | 类型     | 说明            | 备注   |
-| ----------- | ------ | ------------- | ---- |
-| ips         | list   | 返回的IP列表       |      |
-| destination | string | 请求的URL或IP     |      |
-| ptime       | float  | dns解析时间, 单位毫秒 |      |
-| dns_server  | json   | dns服务器IP      |      |
+| 字段        | 类型   | 说明                   | 备注 |
+| ----------- | ------ | ---------------------- | ---- |
+| ips         | list   | 返回的IP列表           |      |
+| destination | string | 请求的URL或IP          |      |
+| ptime       | float  | (单位 毫秒)dns解析时间 |      |
+| dns_server  | json   | dns服务器IP            |      |
 
 #### ips_list格式
 
@@ -1798,25 +1749,7 @@ status_code有如下值
 
 ### stamp_json
 
-```
-{
-    "server_request_generate_time": 12345678,
-    "terminal_request_receive_time": 123456,
-    "terminal_request_send_time": 123456,
-    "terminal_response_receive_time": 123456,
-    "terminal_response_return_time": 123456,
-}
-```
-
-| 字段                             | 类型   | 说明                                       | 备注   |
-| ------------------------------ | ---- | ---------------------------------------- | ---- |
-| server_request_generate_time   | time | 服务器向终端发送请求的时间戳                           |      |
-| terminal_request_receive_time  | time | 终端(树莓派)接收到服务器请求的时间戳                      |      |
-| terminal_request_send_time     | time | 终端(树莓派) 向 目的地址 发起请求的时间                   |      |
-| terminal_response_receive_time | time | 终端(树莓派) 接收到 目的地址 response 的时间            |      |
-| terminal_response_return_time  | time | 终端(树莓派) 接收到 处理完response, 发送给 natrix服务器 的时间 |      |
-
-
+请参考 [时间戳](#时间戳)
 
 ### data_json
 
@@ -1856,32 +1789,106 @@ data_json是返回的数据类型，有正确返回和错误返回2种
 }
 ```
 
-| 字段                 | 类型     | 说明              |
-| ------------------ | ------ | --------------- |
-| url                | string | 请求URL           |
-| last_url           | string | 最后一次请求的URL      |
-| status_code        | int    | HTTP 响应代码       |
-| redirect_count     | int    | 重定向次数           |
-| redirect_time      | float  | 重定向所消耗的时间       |
-| remote_ip          | string | 最后一次连接的远程IP地址   |
-| remote_location    | json   | 远程IP的位置信息       |
-| remote_port        | int    | 最后一次连接的远程端口号    |
-| local_ip           | string | 最后一次连接的本地IP地址   |
-| local_location     | json   | 本地IP的位置信息       |
-| local_port         | int    | 最后一次连接的本地端口号    |
-| total_time         | float  | 请求总的时间          |
-| namelookup_time    | float  | DNS解析所消耗的时间     |
-| period_tcp_connect | float  | TCP连接耗时         |
-| period_ssl_connect | float  | SSL连接耗时         |
-| period_request     | float  | Request请求耗时     |
-| period_response    | float  | Response处理耗时    |
-| period_transfer    | float  | Response传输耗时    |
-| size_upload        | float  | 上传数据包大小         |
-| size_download      | float  | 下载数据包大小         |
-| speed_upload       | float  | 上传速度            |
-| speed_download     | float  | 下载速度            |
-| response_header    | string | response头部信息    |
-| response_body      | string | response body信息 |
+| 字段               | 类型   | 说明                           |
+| ------------------ | ------ | ------------------------------ |
+| url                | string | 请求URL                        |
+| last_url           | string | 最后一次请求的URL              |
+| status_code        | int    | HTTP 响应代码                  |
+| redirect_count     | int    | 重定向次数                     |
+| redirect_time      | float  | (单位 毫秒)重定向所消耗的时间  |
+| remote_ip          | string | 最后一次连接的远程IP地址       |
+| remote_location    | json   | 远程IP的位置信息               |
+| remote_port        | int    | 最后一次连接的远程端口号       |
+| local_ip           | string | 最后一次连接的本地IP地址       |
+| local_location     | json   | 本地IP的位置信息               |
+| local_port         | int    | 最后一次连接的本地端口号       |
+| total_time         | float  | (单位 毫秒)请求总的时间        |
+| namelookup_time    | float  | (单位 毫秒)DNS解析所消耗的时间 |
+| period_tcp_connect | float  | (单位 毫秒)TCP连接耗时         |
+| period_ssl_connect | float  | (单位 毫秒)SSL连接耗时         |
+| period_request     | float  | (单位 毫秒)Request请求耗时     |
+| period_response    | float  | (单位 毫秒)Response处理耗时    |
+| period_transfer    | float  | (单位 毫秒)Response传输耗时    |
+| size_upload        | float  | (单位 byte)上传数据包大小      |
+| size_download      | float  | (单位 byte)下载数据包大小      |
+| speed_upload       | float  | (单位 bytes/second)上传速度    |
+| speed_download     | float  | (单位 bytes/second)下载速度    |
+| response_header    | string | response头部信息               |
+| response_body      | string | response body信息              |
+
+
+
+#### HTTP调用与时间说明
+
+##### HTTP调用流程
+
+HTTP调用的执行过程如下(调用顺序从上至下)
+
+```
+HTTP调用开始
+    |
+    |
+客户端请求DNS解析, 得到服务器端的具体地址(时间 period_nslookup)
+    |
+    |
+客户端与服务器端建立TCP连接(时间 period_tcp_connect, 包含了SSL连接时间 period_ssl_connect)
+    |
+    |
+客户端发起请求, 并传输到服务器端(时间 period_request)
+    |
+    |
+服务器端解析请求，生成返回结果(时间 period_response)
+    |
+    |
+服务器端返回结果传输到客户端(时间 period_transfer)
+    |
+    |
+HTTP调用结束
+```
+
+
+
+##### HTTP时间说明
+
+对于HTTP结果信息返回的时间
+
+- namelookup_time
+
+  ​	(单位 毫秒)DNS解析所消耗的时间  
+
+- period_tcp_connect
+
+  ​	(单位 毫秒)TCP连接耗时  
+
+- period_ssl_connect
+
+  ​	(单位 毫秒)SSL连接耗时  
+
+- period_request  float  
+
+  ​	(单位 毫秒)Request请求耗时  
+
+- period_response
+
+  ​	(单位 毫秒)Response处理耗时  
+
+- period_transfer
+
+  ​	(单位 毫秒)Response传输耗时
+
+大致的计算公式如下：
+
+```
+total_time = period_nslookup + period_tcp_connect + period_request + period_response + period_transfer
+```
+
+
+
+period_ssl_connect 说明
+
+1. period_tcp_connect 时间包含了 period_ssl_connect
+2. 如果不涉及 HTTPS 访问，period_ssl_connect = 0
+3. 如果涉及 HTTPS 访问，period_ssl_connect 指的是SSL连接耗时  
 
 #### location_json格式
 
@@ -2127,12 +2134,12 @@ cat /sys/firmware/devicetree/base/model
     "type": "wired",
     "name": "eth0",
     "macaddress": "xxxxxxxxx",
-    "localip": "10.10.10.10",
+    "localip": "192.168.1.1",
     "netmask": "255.255.255.0",
-    "braodcast": "10.10.10.255",
-    "gateway": "10.10.10.1,
+    "braodcast": "192.168.1.255",
+    "gateway": "192.168.1.1,
     "is_default": true,
-    "public_ip": "10.10.10.10",
+    "public_ip": "1.1.1.1",
     "location_info": location_json,
     "access_intranet": true,
     "access_coporate": true,
@@ -2382,3 +2389,26 @@ url or ip
 ##### 甘特图说明
 
 总时间 = 重定向时间 + 域名解析时间 + TCP连接时间 + 请求时间 + 回复时间
+
+# 时间戳
+
+返回结果的时间戳定义如下
+
+```
+{
+    "server_request_generate_time": 12345678,
+    "terminal_request_receive_time": 123456,
+    "terminal_request_send_time": 123456,
+    "terminal_response_receive_time": 123456,
+    "terminal_response_return_time": 123456,
+}
+```
+
+| 字段                           | 类型 | 说明                                                         | 备注 |
+| ------------------------------ | ---- | ------------------------------------------------------------ | ---- |
+| server_request_generate_time   | time | 服务器向终端发送请求的时间戳                                 | 非空 |
+| terminal_request_receive_time  | time | 终端(树莓派)接收到服务器请求的时间戳                         | 非空 |
+| terminal_request_send_time     | time | 终端(树莓派) 向 目的地址 发起请求的时间<br/>或<br/>终端(树莓派)因缺少相关命令, 不能发起请求，抛出异常的时间 | 非空 |
+| terminal_response_receive_time | time | 终端(树莓派) 接收到 目的地址 response 的时间<br/>或<br/>终端(树莓派)没有接收到目的地址response, 超时或异常的时间 | 可空 |
+| terminal_response_return_time  | time | 终端(树莓派)接收到response(或超时异常等), 返回 natrix服务器 的时间 | 非空 |
+

@@ -1,16 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-import logging
 import time
-from logging.handlers import RotatingFileHandler
+from natrixclient.common.natrix_logging import NatrixLogging
 from natrixclient.common import const
-from natrixclient.common.const import API_LEVEL
-from natrixclient.common.const import API_FILE_LEVEL
-from natrixclient.common.const import API_STREAM_LEVEL
-from natrixclient.common.const import FILE_MAX_BYTES
-from natrixclient.common.const import FILE_BACKUP_COUNTS
 from natrixclient.common.const import HttpOperation
 from natrixclient.command.nping import PingTest
 from natrixclient.command.nhttp import HttpTest
@@ -32,27 +24,8 @@ result = natrixclient.ping("www.baidu.com", params=params)
 """
 
 
-ln = "natrixclient_api"
-logger = logging.getLogger(ln)
-logger.setLevel(API_LEVEL)
-
-# create file handler which logs even debug messages
-fn = const.LOGGING_PATH + ln + '.log'
-fh = RotatingFileHandler(filename=fn, maxBytes=FILE_MAX_BYTES, backupCount=FILE_BACKUP_COUNTS)
-fh.setLevel(API_FILE_LEVEL)
-fh_fmt = logging.Formatter(fmt=const.FILE_LOGGING_FORMAT, datefmt=const.FILE_LOGGING_DATE_FORMAT)
-fh.setFormatter(fh_fmt)
-
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(API_STREAM_LEVEL)
-# create formatter and add it to the handlers
-ch_fmt = logging.Formatter(fmt=const.CONSOLE_LOGGING_FORMAT)
-ch.setFormatter(ch_fmt)
-
-# add the handlers to logger
-logger.addHandler(ch)
-logger.addHandler(fh)
+ln = "natrixclient"
+logger = NatrixLogging(ln)
 
 
 class NatrixClientAPI(object):
@@ -144,10 +117,14 @@ class NatrixClientAPI(object):
         return check_result
 
 
-# if __name__ == '__main__':
-#     params = dict()
-#     ping_result = ping("http://www.baidu.com", params)
-#     print(ping_result)
+if __name__ == '__main__':
+    natrix_api = NatrixClientAPI()
+    params = {'logger': logger}
+    ping_result = natrix_api.http(const.HttpOperation.GET, "http://www.baidu.com", params)
+    ping_result = natrix_api.http(const.HttpOperation.GET, "http://www.baidu.com", params)
+    ping_result = natrix_api.http(const.HttpOperation.GET, "http://www.baidu.com", params)
+    ping_result = natrix_api.http(const.HttpOperation.GET, "http://www.baidu.com", params)
+    print(ping_result)
 
 
 

@@ -94,7 +94,10 @@ class SystemInfo(object):
     def get_minor_version():
         minor_version = distro.minor_version()
         if not minor_version:
-            minor_version = "UNKNOWN"
+            if SystemInfo.get_major_version != "UNKNOWN":
+                minor_version = "0"
+            else:
+                minor_version = "UNKNOWN"
         return minor_version
 
     # 操作系统内核版本信息, 例如linux kernel的版本信息

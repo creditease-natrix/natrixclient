@@ -1,6 +1,6 @@
 include LICENSE
 include requirements.txt
 include test-requirements.txt
-include natrixclient/conf/etc/natrix/*.*
+include natrixclient/conf/etc/natrixclient/*.*
 include natrixclient/conf/etc/systemd/system/*.*
 include natrixclient/data/*.db
